@@ -1,0 +1,48 @@
+body {
+    background-color: var(--main-background-colour);
+    color: var(--text-colour);
+}
+
+h1 {
+    margin: 5px;
+}
+
+div.row {
+    background-color: var(--row-background-colour);
+    border: 2px solid var(--box-color);
+    margin: 5px;
+    padding: 5px;
+    border-radius: 2px;
+    display: flex;
+    align-items: center;
+}
+
+div.rowBox {
+    display: inline-block;
+    border: none;
+}
+
+button.optionButton, select {
+    font-size: 16px;
+    color: var(--button-text-color); 
+    background-color: var(--button-color);
+    border: 1px solid var(--box-color);
+}
+
+button.optionButton {
+    width: 100px;
+    height: 60px;
+    border-radius: 2px; 
+}
+
+#selectCatalogContainer {
+    width: 200px;
+    height: 60px;
+    padding: 5px;
+}
+
+#zoomContainer {
+    width: 200px;
+    height: 60px;
+    padding: 5px;
+}

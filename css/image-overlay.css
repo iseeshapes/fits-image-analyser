@@ -1,0 +1,34 @@
+#image-container {
+    width: auto;
+    height: 500px;
+    margin: 5px;
+
+    overflow: scroll ! important;
+
+    border: 1px solid var(--box-colour);
+}
+
+svg.image {
+    overflow: visible ! important;
+}
+
+#imageBackground {
+    stroke: #aaaaaa;
+    fill: #000000;  
+}
+
+svg.image circle.star {
+    stroke: #d0d0ff;
+    fill: #303088;
+}
+
+svg.image circle.selected {
+    fill: #1111ff;
+}
+
+svg.image text.starImageLabel {
+    border: 1px solid var(--box-colour);
+    font-size: 12px;
+    stroke: #fff;
+    fill: var(--box-colour);
+}

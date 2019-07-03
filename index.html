@@ -1,0 +1,133 @@
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="css/variables.css">
+        <link rel="stylesheet" type="text/css" href="css/site.css">
+        <link rel="stylesheet" type="text/css" href="css/star-list.css">
+        <link rel="stylesheet" type="text/css" href="css/star-details.css">
+        <link rel="stylesheet" type="text/css" href="css/image-overlay.css">
+
+        <!--script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script-->
+        <script src="js/jquery.min.js"></script>
+
+        <script src="js/angle.js"></script>
+        <script src="js/sip-data.js"></script>
+        <script src="js/fits-header.js"></script>
+        <script src="js/site-controller.js"></script>
+        <script src="js/star-selector.js"></script>
+        <script src="js/star-list.js"></script>
+        <script src="js/star-details.js"></script>
+        <script src="js/image-overlay.js"></script>
+
+        <style type="text/css">
+        </style>
+    </head>
+    <body>
+        <h1>Fits Image Analyser</h1>
+
+        <div id="fileSelectRow" class="row">
+            <label for="fileInput">WCS File</label>
+            <input id="fileInput" type="file" />
+        </div>
+
+        <div id="optionsRow" class="row">
+            <button class="optionButton">Fits Header</button>
+            <button id="starListButton" class="optionButton">Star Table</button>
+
+            <div id="selectCatalogContainer" class="rowBox">
+                <div>Select Star</div>
+                <div>
+                    <select id="catalogSelectorty">
+                        <option>No Catalog</option>
+                    </select>
+                </div>
+                <div>
+                    <select id="catalogItemSelector">
+                        <option>No Stars</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="zoomContainer" class="rowBox">
+                <div>Zoom</div>
+                <select id="zoom">
+                    <option value="0.25">25%</option>
+                    <option value="0.33">33%</option>
+                    <option value="0.5">50%</option>
+                    <option value="1">100%</option>
+                    <option value="2">200%</option>
+                    <option value="4">400%</option>
+                </select>
+            </div>
+        </div>
+    
+        <div class="row">        
+            <div id="image-container">
+                <svg id="image" class="image" />
+            </div>
+
+            <div id="starDetailsContainer">
+                <div class="smallBoxTitle title">Selected Star</div>
+                <div class="smallBoxInfo info">
+                    <table id="starDetails" class="starDetails"></table>
+                </div>
+            </div>
+        </div>
+    </body>
+
+    <div id="starListBackground" style="display: none">
+        <div id="starListContainer">
+        <table id="starList" class="starList">
+            <thead>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+        </div>
+    </div>
+
+    <script>
+        let siteController = new SiteController();
+        let starSelector = new StarSelector("catalogSelector", "catalogItemSelector", siteController);
+        let starList = new StarList("starList", siteController);
+        let starDetails = new StarDetails("starDetails", siteController);
+        let imageOverlay = new ImageOverlay("image", siteController);
+        siteController.addListener(starSelector);
+        siteController.addListener(starList);
+        siteController.addListener(starDetails);
+        siteController.addListener(imageOverlay);
+
+        $("#zoom").change(() => {
+            var zoom = $("#zoom").val();
+            imageOverlay.zoom(zoom);
+        });
+
+        $("#starListButton").click(() => {
+            $("#starListBackground").css("display", "inline-block");
+        });
+
+        $("#starListBackground").click(() => {
+            $("#starListBackground").css("display", "none");
+        });
+
+        function loadFile(file) {
+            if(!file) {
+                return;
+            }
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                var contents = e.target.result;
+                siteController.loadData(contents);
+            };
+            reader.readAsText(file);
+        }
+
+        $("#fileInput").change(e => {
+            console.log(e.target.files[0]);
+            loadFile(e.target.files[0]);
+        });
+
+        $.get("/data/Horus_Light_20_secs_2019-01-30T23-14-59_005.wcs", (data) => {
+            siteController.loadData(data);
+        });
+    </script>
+</html>
