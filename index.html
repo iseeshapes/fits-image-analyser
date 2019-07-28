@@ -1,21 +1,29 @@
 <html>
     <head>
-        <link rel="stylesheet" type="text/css" href="css/variables.css">
         <link rel="stylesheet" type="text/css" href="css/site.css">
+        <link rel="stylesheet" type="text/css" href="css/fits-header-table.css">
         <link rel="stylesheet" type="text/css" href="css/star-list.css">
         <link rel="stylesheet" type="text/css" href="css/star-details.css">
         <link rel="stylesheet" type="text/css" href="css/image-overlay.css">
 
         <!--script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script-->
-        <script src="js/jquery.min.js"></script>
+        <script src="js/lib/jquery.min.js"></script>
+        <script src="js/lib/wcs.js"></script>
+
+        <script src="js/image.js"></script>
+        <script src="js/catalog-item.js"></script>
 
         <script src="js/angle.js"></script>
-        <script src="js/sip-data.js"></script>
+        <!--script src="js/sip-data.js"></script-->
         <script src="js/fits-header.js"></script>
+        <script src="js/fits-image.js"></script>
+        <script src="js/fits-header-table.js"></script>
         <script src="js/site-controller.js"></script>
         <script src="js/star-selector.js"></script>
         <script src="js/star-list.js"></script>
-        <script src="js/star-details.js"></script>
+        <script src="js/star-details-table.js"></script>
+        <script src="js/star-details-button.js"></script>
+        <script src="js/star-finder.js"></script>
         <script src="js/image-overlay.js"></script>
 
         <style type="text/css">
@@ -24,19 +32,27 @@
     <body>
         <h1>Fits Image Analyser</h1>
 
+        <div class="row" style="display: none">
+            <div style="width: 900px">Upload a WCS FITS Header file below to create a map of the stars in your image.<p><a href="https://nova.astrometery.net">astronometry.net</a> can be used to create the WCS Header from your fits image.</div>
+        </div>
+
         <div id="fileSelectRow" class="row">
             <label for="fileInput">WCS File</label>
             <input id="fileInput" type="file" />
         </div>
 
         <div id="optionsRow" class="row">
-            <button class="optionButton">Fits Header</button>
-            <button id="starListButton" class="optionButton">Star Table</button>
+            <div class="row-container">
+                <button id="fitsHeaderButton" class="menu">Fits Header</button>
+            </div>
+            <div class="row-container">
+                <button id="starListButton" class="menu">Star Table</button>
+            </div>
 
-            <div id="selectCatalogContainer" class="rowBox">
+            <div id="selectCatalogContainer" class="row-container">
                 <div>Select Star</div>
                 <div>
-                    <select id="catalogSelectorty">
+                    <select id="catalogSelector">
                         <option>No Catalog</option>
                     </select>
                 </div>
@@ -47,58 +63,97 @@
                 </div>
             </div>
 
-            <div id="zoomContainer" class="rowBox">
+            <div id="zoomContainer" class="row-container">
                 <div>Zoom</div>
                 <select id="zoom">
                     <option value="0.25">25%</option>
-                    <option value="0.33">33%</option>
                     <option value="0.5">50%</option>
+                    <option value="0.75">75%</option>
                     <option value="1">100%</option>
                     <option value="2">200%</option>
                     <option value="4">400%</option>
                 </select>
             </div>
-        </div>
-    
-        <div class="row">        
-            <div id="image-container">
-                <svg id="image" class="image" />
-            </div>
 
-            <div id="starDetailsContainer">
-                <div class="smallBoxTitle title">Selected Star</div>
-                <div class="smallBoxInfo info">
-                    <table id="starDetails" class="starDetails"></table>
-                </div>
+            <div class="row-container">
+                <button id="starDetailsButton" class="menu">Show Details</button>
+            </div>
+            <div class="row-container">
+                <button class="menu">Help</button>
+            </div>
+        </div>
+
+        <div class="row">
+            <div id="image-container" class="row-container">
+                <canvas id="canvas"></canvas>
+                <svg id="image" class="image" />
             </div>
         </div>
     </body>
 
-    <div id="starListBackground" style="display: none">
-        <div id="starListContainer">
-        <table id="starList" class="starList">
-            <thead>
-            </thead>
-            <tbody>
-            </tbody>
-        </table>
+    <div id="fitsHeaderBackground" class="popup-background" style="display: none">
+        <div id="fitsHeaderContainer" class="popup-container">
+            <table id="fitsHeaderTable" class="popup-table fits-header-table">
+                <thead>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="starListBackground" class="popup-background" style="display: none">
+        <div id="starListContainer" class="popup-container">
+            <table id="starList" class="popup-table star-list-table">
+                <thead>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="starDetailsBackground" class="popup-background" style="display: none">
+        <div id="starDetailsContainer" class="popup-container">
+            <table id="starDetailsTable" class="popup-table star-details-table">
+                <thead>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
         </div>
     </div>
 
     <script>
         let siteController = new SiteController();
+        let fitsHeaderTable = new FitsHeaderTable("fitsHeaderTable", siteController);
         let starSelector = new StarSelector("catalogSelector", "catalogItemSelector", siteController);
         let starList = new StarList("starList", siteController);
-        let starDetails = new StarDetails("starDetails", siteController);
+        let starDetailsTable = new StarDetailsTable("starDetailsTable", siteController);
+        let starDetailsButton = new StarDetailsButton("starDetailsButton", siteController);
         let imageOverlay = new ImageOverlay("image", siteController);
-        siteController.addListener(starSelector);
-        siteController.addListener(starList);
-        siteController.addListener(starDetails);
-        siteController.addListener(imageOverlay);
+        let fitsImage = new FitsImage("canvas", siteController);
+        siteController.addSearchListener(fitsHeaderTable);
+        siteController.addSearchListener(starSelector);
+        siteController.addSearchListener(starList);
+        siteController.addSearchListener(starDetailsTable);
+        siteController.addSearchListener(starDetailsButton);
+        siteController.addSearchListener(imageOverlay);
+
+        siteController.addDataListener(fitsImage);
 
         $("#zoom").change(() => {
             var zoom = $("#zoom").val();
             imageOverlay.zoom(zoom);
+            fitsImage.zoom(zoom);
+        });
+
+        $("#fitsHeaderButton").click(() => {
+            $("#fitsHeaderBackground").css("display", "inline-block");
+        });
+
+        $("#fitsHeaderBackground").click(() => {
+            $("#fitsHeaderBackground").css("display", "none");
         });
 
         $("#starListButton").click(() => {
@@ -109,16 +164,24 @@
             $("#starListBackground").css("display", "none");
         });
 
+        $("#starDetailsButton").click(() => {
+            $("#starDetailsBackground").css("display", "inline-block");
+        });
+
+        $("#starDetailsBackground").click(() => {
+            $("#starDetailsBackground").css("display", "none");
+        });
+
         function loadFile(file) {
             if(!file) {
                 return;
             }
-            var reader = new FileReader();
+            let reader = new FileReader();
             reader.onload = function(e) {
                 var contents = e.target.result;
                 siteController.loadData(contents);
             };
-            reader.readAsText(file);
+            reader.readAsArrayBuffer(file);
         }
 
         $("#fileInput").change(e => {
@@ -126,8 +189,16 @@
             loadFile(e.target.files[0]);
         });
 
-        $.get("/data/Horus_Light_20_secs_2019-01-30T23-14-59_005.wcs", (data) => {
-            siteController.loadData(data);
-        });
+        let oReq = new XMLHttpRequest();
+        oReq.open("GET", "/data/Horus_Light_20_secs_2019-01-30T23-14-59_005.new", true);
+        oReq.responseType = "arraybuffer";
+
+        oReq.onload = function (oEvent) {
+          let arrayBuffer = oReq.response; // Note: not oReq.responseText
+          if (arrayBuffer) {
+              siteController.loadData(arrayBuffer);
+          }
+        }
+        oReq.send(null);
     </script>
 </html>

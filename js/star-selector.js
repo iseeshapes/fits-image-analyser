@@ -19,7 +19,7 @@ class StarSelector {
             value = Number(value);
             this.setSelectedCatalog(value);
         });
- 
+
         $("#" + this.catalogItemSelectorId).change(() => {
             let value = $("#" + this.catalogItemSelectorId).val();
             if (value === "no-value") {
@@ -50,12 +50,12 @@ class StarSelector {
 
     dataLoaded() {
         this.clearCatalogSelector();
-        
+
         let catalogSelector = $("#" + this.catalogSelectorId);
 
-        for (let attribute of this.siteController.idAttributes) {
+        for (let attribute of CatalogItem.idAttributes) {
             catalogSelector.append($("<option>", {
-                value: attribute.id, 
+                value: attribute.id,
                 text: attribute.title
             }));
         }

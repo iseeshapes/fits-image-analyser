@@ -1,10 +1,13 @@
+'use strict';
+
 class FitsHeader {
 	headerItems = [];
+    dataLength = -1;
 
 	constructor (fileContent) {
 		let count = 0;
 		let index = 0;
-	    while (index + 80 < fileContent.length) {
+	    while (index + 80 <= fileContent.length) {
 	      if (fileContent.substring(index, index + 3) === "END") {
 	        break;
 	      }
@@ -20,12 +23,15 @@ class FitsHeader {
 	      value = value.trim();
 	      this.headerItems.push({
 	        index : count,
-	        name: name, 
-	      	value : value, 
-	      	comment : comment 
+	        name: name,
+	      	value : value,
+	      	comment : comment
 	      });
 	      index += 80;
 	    }
+        this.dataLength = index;
+        if ((this.dataLength % 2880) > 0)
+	       this.dataLength += 2880 - (this.dataLength % 2880)
 	}
 
 	findString (name) {

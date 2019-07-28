@@ -1,35 +1,36 @@
 'use strict';
 
 class ImageOverlay {
-	imageId;
-	siteController;
+	_imageId;
+	_siteController;
+    _lastSelectedStar = undefined;
 
-	stars = [];
+	_stars = [];
 
-	coordinatePrecision = 2;
-    magnitudePrecision = 1;
-    maxMagnitude = 17.0;
-    starSizeDivisor = 5.0;
-    starSizeMultiplier = 2.0;
-  	
-  	constructor (imageId, searchResults) {
-    	this.imageId = imageId;
-    	this.siteController = siteController;
+	_coordinatePrecision = 2;
+    _magnitudePrecision = 1;
+    _maxMagnitude = 17.0;
+    _starSizeDivisor = 5.0;
+    _starSizeMultiplier = 5;
+
+  	constructor (imageId, siteController) {
+    	this._imageId = imageId;
+    	this._siteController = siteController;
   	}
 
   	calcStarSize (magnitude) {
-        let nextMagnitude = Math.floor(this.maxMagnitude * this.magnitudePrecision) / this.magnitudePrecision;
+        let nextMagnitude = Math.floor(this._maxMagnitude * this._magnitudePrecision) / this._magnitudePrecision;
 
         let lastSize = 1.0;
         let starSize = 1.0;
 
         while (magnitude < nextMagnitude) {
-            starSize += lastSize / this.starSizeDivisor;
+            starSize += lastSize / this._starSizeDivisor;
             lastSize = starSize;
-            nextMagnitude -= this.magnitudePrecision;
+            nextMagnitude -= this._magnitudePrecision;
         }
 
-        return Math.round(starSize * this.starSizeMultiplier * this.coordinatePrecision) / this.coordinatePrecision;
+        return Math.round(starSize * this._starSizeMultiplier * this._coordinatePrecision) / this._coordinatePrecision;
     }
 
   	static makeSVG (tag, attrs) {
@@ -40,94 +41,98 @@ class ImageOverlay {
         return el;
     }
 
-    createBackground (width, height) {
-        let rectangle = ImageOverlay.makeSVG('rect', {
-            id: "imageBackground",
-            x: 0,
-            y: 0,
-            width: width,
-            height: height
-        });
-        document.getElementById(this.imageId).appendChild(rectangle);
-    }
-
-    createLabel(starId) {
-        let circle = $("#imageStar" + starId);
-        let radius = Number(circle.attr("r"));
-        let x = Number(circle.attr("cx"));
-        let y = Number(circle.attr("cy"));
+    createLabel(star) {
+        let svg = document.getElementById(this._imageId);
 
         let label = ImageOverlay.makeSVG('text', {
-            id: "imageStarLabel" + starId,
+            id: "imageStarLabel" + star.id,
             class: "starImageLabel",
-            x: x + radius + 5,
-            y: y - radius - 5
+            x: star.x + star.size + 5,
+            y: star.y - star.size - 5
         });
-        label.innerHTML = this.siteController.getStarName(starId);
-        document.getElementById(this.imageId).appendChild(label);
-        //console.log ("Create Label => Star: " + starId + ", name: " + this.siteController.getStarName(starId));
+        label.innerHTML = star.name;
+        svg.appendChild(label);
+
+        let rect = label.getBBox();
+
+        let rectangle = ImageOverlay.makeSVG ('rect', {
+            id: "imageStarLabelBackground" + star.id,
+            class: "starImageLabel",
+            x: rect.x,
+            y: rect.y,
+            width: rect.width,
+            height: rect.height
+        });
+        svg.insertBefore(rectangle, label);
     }
 
-    deleteLabel (starId) {
-        let label = document.getElementById("imageStarLabel" + starId);
+    deleteLabel (star) {
+        let label = document.getElementById("imageStarLabel" + star.id);
         label.remove();
+        let rectangle = document.getElementById("imageStarLabelBackground" + star.id);
+        rectangle.remove();
     }
 
     createStar (star) {
   		let circle = ImageOverlay.makeSVG('circle', {
-  			id: "imageStar" + star.id,
-  			class: "star",
-  			cx: star.x, 
-  			cy: star.y, 
+  			id: star.type + "Star" + star.id,
+  			class: star.type + "Star",
+  			cx: star.x,
+  			cy: star.y,
   			r: star.size
   		});
-    	document.getElementById(this.imageId).appendChild(circle);
-    	circle.onclick = () => {
-    		this.siteController.selectItem(this, star.id)
-    	};
-        circle.onmouseenter = () => {
-            this.createLabel(star.id);
-        };
-        circle.onmouseleave = () => {
-            this.deleteLabel (star.id);
-            //console.log ("Mouse Leave Star " + star.id);
+
+    	document.getElementById(this._imageId).appendChild(circle);
+        if (star.type === "catalog") {
+    	    circle.onclick = () => this._siteController.selectItem(this, star.id);
+        } else if (star.type === "image"){
+            circle.onclick = () => this._siteController.selectItem(this, undefined);
         }
+        circle.onmouseenter = () => this.createLabel (star);
+        circle.onmouseleave = () => this.deleteLabel (star);
     }
 
-  	dataLoaded () {
-  		let sipData = siteController.sipData;
-  		$("#" + this.imageId).attr("viewBox", "0 0 " + sipData.imageWidth + " " + sipData.imageHeight);
-  		$("#" + this.imageId).attr("width", sipData.imageWidth);
-  		$("#" + this.imageId).attr("height", sipData.imageHeight);
+    clear () {
+        let overlay = document.getElementById(this._imageId);
+        while (overlay.firstChild) {
+            overlay.removeChild(overlay.firstChild);
+        }
+        this._stars = [];
+    }
 
-  		let xIndex = undefined;
-  		let yIndex = undefined;
-  		let magIndex = undefined;
-  		for (let attribute of this.siteController.coreAttributes) {
-  			if (attribute.type === "x-pixel") {
-  				xIndex = attribute.id;
-  			}
-  			if (attribute.type === "y-pixel") {
-  				yIndex = attribute.id;
-  			}
-  			if (attribute.type === "mag") {
-  				magIndex = attribute.id;
-  			}
+  	dataLoaded (image) {
+        this.clear();
+
+        let width = image.width;
+        let height = image.height;
+        let overlay = $("#" + this._imageId);
+  		overlay.attr("viewBox", "0 0 " + width + " " + height);
+  		overlay.attr("width", width);
+  		overlay.attr("height", height);
+
+  		for (let item of image.items) {
+            if (item.isInCatalog()) {
+      			this._stars.push({
+      				id : item.getId(),
+      				x : item.getCoreValue("x-pixel"),
+      				y : item.getCoreValue("y-pixel"),
+      				size : this.calcStarSize(item.getCoreValue("mag")),
+                    name : item.getName(),
+                    type: "catalog"
+      			});
+            } else if (item.isInImage()) {
+                this._stars.push({
+      				id : item.getId(),
+      				x : item.getImageValue(CatalogItem.imageAttributes[0].type),
+      				y : item.getImageValue(CatalogItem.imageAttributes[1].type),
+      				size : item.getImageValue(CatalogItem.imageAttributes[2].type),
+                    name : "No Catalog Item",
+                    type : "image"
+                });
+            }
   		}
 
-  		if (xIndex === undefined || yIndex === undefined || magIndex == undefined) {
-  			throw "Cannot find x or y pixel values in search results";
-  		}
-
-  		for (let item of this.siteController.items) {
-  			this.stars.push({
-  				id : item.id,
-  				x : item.attributes[xIndex],
-  				y : item.attributes[yIndex],
-  				size: this.calcStarSize(item.attributes[magIndex])
-  			});
-  		}
-  		this.stars.sort((lhs, rhs) => {
+  		this._stars.sort((lhs, rhs) => {
   			if (lhs.size < rhs.size)
   				return 1;
   			if (lhs.size > rhs.size)
@@ -135,23 +140,38 @@ class ImageOverlay {
   			return 0;
   		});
 
-        this.createBackground(sipData.imageWidth, sipData.imageHeight);
-
-  		for (let star of this.stars) {
+  		for (let star of this._stars) {
   			this.createStar(star);
   		}
+
+        this._lastSelected = undefined;
   	}
 
   	setSelectedItem (caller, item) {
-       for (let star of this.stars) {
-            $('#imageStar' + star.id).removeClass("selected");
+        if (this._lastSelected !== undefined) {
+            this.deleteLabel(this._lastSelected);
+            $('#catalogStar' + this._lastSelected.id).removeClass("selected");
         }
-        $("#imageStar" + item.id).addClass("selected");
+
+        this._lastSelected = undefined;
+        if (item !== undefined) {
+            for (let star of this._stars) {
+                if (star.id === item.getId()) {
+                    this._lastSelected = star;
+                    break;
+                }
+            }
+        }
+
+        if (this._lastSelected !== undefined) {
+            $("#catalogStar" + this._lastSelected.id).addClass("selected");
+            this.createLabel(this._lastSelected);
+        }
   	}
 
     zoom (zoom) {
-        let sipData = siteController.sipData;
-        $("#" + this.imageId).attr("width", sipData.imageWidth * zoom);
-        $("#" + this.imageId).attr("height", sipData.imageHeight * zoom);
+        let overlay = $("#" + this._imageId);
+        overlay.attr("width", this._siteController.width * zoom);
+        overlay.attr("height", this._siteController.height * zoom);
     }
 }

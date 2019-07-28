@@ -1,0 +1,11 @@
+.fits-header-table .attribute {
+    width: 200px;
+}
+
+.fits-header-table .value {
+    width: 300px;
+}
+
+.fits-header-table .comment {
+    width: 250px;
+}

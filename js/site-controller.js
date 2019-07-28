@@ -1,39 +1,44 @@
 'use strict'
 
 class SiteController {
-	listeners = [];
+    _dataListeners = [];
+    _searchListeners = [];
 	fitsHeader = {};
 	sipData = {};
 
-	coreAttributes = [
-      { type: "x-pixel", title : "X" },
-      { type: "y-pixel", title : "Y" },
-      { type: "ra"     , title : "Right Ascension" },
-      { type: "dec"    , title : "Declination" },
-      { type: "mag"    , title : "Visual Mag" }
-    ];
-
-    idAttributes = [];
-    dataAttributes = [];
-
     items = [];
+    _selectedItem = undefined;
 
-	addListener (listener) {
-		this.listeners.push(listener);
+    addSearchListener (listener) {
+		this._searchListeners.push(listener);
 	}
 
-	loadData (rawFileContents) {
-		this.fitsHeader = new FitsHeader(rawFileContents)
-		this.sipData = new SipData(this.fitsHeader);
+    addDataListener (listener) {
+		this._dataListeners.push(listener);
+	}
 
-		$.ajax({
+	loadData (fileContents) {
+        let text = new TextDecoder('utf-8').decode(fileContents);
+
+		this.fitsHeader = new FitsHeader(text);
+        this.wcs = new wcs();
+        this.wcs.init (text);
+
+        this.image = new Image(fileContents, this.fitsHeader, this.wcs);
+
+        $.ajax({
          	type : "POST",
          	headers : {
              	'Accept': 'application/json',
             	'Content-Type': 'application/json'
           		},
-          	url : "/sip",
-          	data : JSON.stringify(this.sipData),
+          	url : "/sip/points",
+          	data : JSON.stringify([
+                    [this.image.topLeft.ra    , this.image.topLeft.dec    ],
+                    [this.image.topRight.ra   , this.image.topRight.dec   ],
+                    [this.image.bottomRight.ra , this.image.bottomRight.dec ],
+                    [this.image.bottomLeft.ra, this.image.bottomLeft.dec]
+            ]),
           	success : (data) => {
           		this.loadSearchResults(data);
           	},
@@ -41,68 +46,39 @@ class SiteController {
             	console.log("AJAX Error:\n\nText Status: " + textStatus + "\nerrorThrown: " + errorThrown);
         	}
         });
+
+        for (let listener of this._dataListeners) {
+            listener.dataLoaded(this.image);
+        }
 	}
 
 	loadSearchResults (searchResults) {
-		for (let id in searchResults.attributes) {
-			let found = false;
-			for (let heading of this.coreAttributes) {
-				if (searchResults.attributes[id].type == heading.type) {
-					heading.id = id;
-					found = true;
-					break;
-				}
-			}
-			if (!found) {
-				if (searchResults.attributes[id].type === "id") {
-					this.idAttributes.push({
-						type : searchResults.attributes[id].type,
-						title : searchResults.attributes[id].name,
-						id : id
-					});
-				} else if (searchResults.attributes[id].type === "data") {
-					this.dataAttributes.push({
-						type : searchResults.attributes[id].type,
-						title : searchResults.attributes[id].name,
-						id : id
-					})
-				}
-			}
-		}
+        this.image.createItems(searchResults);
 
-		this.items = searchResults.items;
-
-		for (let listener of this.listeners) {
-			listener.dataLoaded();
+		for (let listener of this._searchListeners) {
+			listener.dataLoaded(this.image);
 		}
 	}
 
 	selectItem(caller, id) {
-		let selected = undefined;
-		for (let item of this.items) {
-			if (item.id === id) {
+        let selected = undefined;
+		for (let item of this.image.items) {
+			if (item.getId() === id) {
 				selected = item;
 				break;
 			}
 		}
-		if (selected !== undefined) {
-			for (let listener of this.listeners) {
-				listener.setSelectedItem (caller, selected);
-			}
+        this.notifyListenersOfSelectionChange (caller, selected);
+    }
+
+    clearSelection (caller) {
+        this.notifyListenersOfSelectionChange (caller, undefined);
+    }
+
+    notifyListenersOfSelectionChange (caller, selected) {
+        this.selectedItem = selected;
+		for (let listener of this._searchListeners) {
+			listener.setSelectedItem (caller, selected);
 		}
 	}
-
-    getStarName (id) {
-        for (let item of this.items) {
-            if (item.id === id) {
-                for (let idAttribute of this.idAttributes) {
-                    if (item.attributes[idAttribute.id] !== undefined) {
-                        return idAttribute.title + ": " + item.attributes[idAttribute.id];
-                    }
-                }
-                break;
-            }
-        }
-        return "Unknown Star";
-    }
 }

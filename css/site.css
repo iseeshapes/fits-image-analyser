@@ -1,48 +1,108 @@
+:root {
+    --main-background-colour: hsla(200, 5%, 95%, 1);
+    --popup-screen-background-colour: rgba(51,51,51,0.7);
+
+    --text-colour: hsla(20, 75%, 15%, 1);
+
+    --large-margin-size: 10px;
+    --small-margin-size: 5px;
+
+    --row-border-color: hsla(200, 100%, 33%, 1);
+    --row-background-colour: hsla(200, 5%, 95%, 1);
+
+    --control-text-color: hsla(200, 5%, 95%, 1);
+    --control-background-color: hsla(20, 75%, 15%, 1);
+    --control-disabled-text-color: hsla(0, 5%, 95%, 1);;
+    --control-disabled-background-color: hsla(0, 5%, 95%, 1);;
+}
+
 body {
     background-color: var(--main-background-colour);
     color: var(--text-colour);
 }
 
 h1 {
-    margin: 5px;
+    margin: var(--large-margin-size);
+    font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+    font-size: 48px;
 }
 
 div.row {
     background-color: var(--row-background-colour);
     border: 2px solid var(--box-color);
-    margin: 5px;
-    padding: 5px;
+    margin: var(--large-margin-size);
     border-radius: 2px;
     display: flex;
     align-items: center;
 }
 
-div.rowBox {
+div.row-container {
     display: inline-block;
     border: none;
+    margin: var(--small-margin-size);
+    flex: auto;
 }
 
-button.optionButton, select {
+button.menu, select {
     font-size: 16px;
-    color: var(--button-text-color); 
-    background-color: var(--button-color);
-    border: 1px solid var(--box-color);
-}
-
-button.optionButton {
+    color: var(--control-text-color);
+    background-color: var(--control-background-color);
+    /*border: 1px solid var(--box-color);*/
     width: 100px;
-    height: 60px;
-    border-radius: 2px; 
+    margin-left: auto;
+    margin-right: auto;
 }
 
-#selectCatalogContainer {
-    width: 200px;
-    height: 60px;
-    padding: 5px;
+button.menu {
+    height: 50px;
+    border-radius: 5px;
 }
 
-#zoomContainer {
-    width: 200px;
-    height: 60px;
-    padding: 5px;
+button.menu:disabled {
+    color: var(--disabled-control-text-color);
+    background-color: var(--disabled-control-background-color);
+}
+
+div.popup-background {
+    width: 100%;
+    height: 100%;
+
+    background-color: var(--popup-screen-background-colour);
+
+    position: fixed;
+    left: 0;
+    top: 0;
+}
+
+div.popup-container {
+    width: 800px;
+    height: 400px;
+    margin: 5px;
+
+    overflow: scroll ! important;
+
+    border: 1px solid var(--box-colour);
+    background-color: var(--row-background-colour);
+    position: fixed;
+    left: 200;
+    top: 100;
+}
+
+div.popup-table thead {
+    width: fit-content;
+    overflow: visible ! important;
+}
+
+table.popup-table tbody {
+    width: fit-content;
+	overflow: visible ! important;
+}
+
+table.popup-table tbody, table.popup-table thead {
+	display: block;
+}
+
+table.popup-table, table.popup-table th, table.popup-table td {
+	border: 1px solid black;
+	border-collapse: collapse;
 }

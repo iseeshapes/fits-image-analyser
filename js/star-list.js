@@ -1,34 +1,43 @@
 'use strict';
 
 class StarList {
-    tableId;
-    siteController;
-    rows;
+    _tableId;
+    _siteController;
+    _rows;
 
     constructor(tableId, siteController) {
-        this.tableId = tableId;
-        this.siteController = siteController;
+        this._tableId = tableId;
+        this._siteController = siteController;
     }
 
     dataLoaded() {
-        let html = '<tr><th>X Pixel</th><th>Y Pixel</th><th>Right Ascension</th><th>Declination</th><th>Magnitude</th>';
-        for (let heading of this.siteController.idAttributes) {
-            html += '<th>' + heading.title + '</th>';
+        this._attributes = [];
+        for (let attribute of CatalogItem.coreAttributes) {
+            this._attributes.push(attribute);
+        }
+        for (let attribute of CatalogItem.idAttributes) {
+            this._attributes.push(attribute);
+        }
+
+        let html = '<tr>'
+        for (let attribute of this._attributes) {
+            + '<th class="' + attribute.type + '">' + attribute.title + '</th>'
         }
         html += '</tr>';
         $("#" + this.tableId + " thead").html(html);
 
-        this.rows = [];
-        for(let item of this.siteController.items) {
+        this._rows = [];
+        for(let item of this._siteController.items) {
             let row = {};
             row.id = item.id;
-            for (let heading of this.siteController.coreAttributes) {
-                row[heading.id] = Number(item.attributes[heading.id]);
+            for (let attribute of this._attributes) {
+                if (attribute.type === "id") {
+                    row[attribute.id] = Number(item.getValue(attribute));
+                } else {
+                    row[attribute.id] = item.getValue(attribute);
+                }
             }
-            for (let heading of this.siteController.idAttributes) {
-                row[heading.id] = item.attributes[heading.id];
-            }
-            this.rows.push (row);
+            this._rows.push (row);
         }
 
         this.sortRowsByMagnitude();
@@ -37,7 +46,7 @@ class StarList {
 
     sortRowsByMagnitude() {
         let magIndex = undefined;
-        for (let heading of this.siteController.coreAttributes) {
+        for (let heading of this._attributes) {
             if (heading.type === 'mag') {
                 magIndex = heading.id;
                 break;
@@ -48,7 +57,7 @@ class StarList {
             console.log ("No magnitude heading defined");
             return;
         }
-        this.rows.sort((lhs, rhs) => {
+        this._rows.sort((lhs, rhs) => {
             if (lhs[magIndex] < rhs[magIndex]) {
                 return -1;
             }
@@ -61,42 +70,34 @@ class StarList {
 
     writeRows () {
         let html = "";
-        for(let row of this.rows) {
+        for(let row of this._rows) {
             html += '<tr id="starRow' + row.id + '">';
-            for (let heading of this.siteController.coreAttributes) {
-                if (row[heading.id] === undefined) {
+
+            for (let attribute of this._attributes) {
+                if (row[attribute.id] === undefined) {
                     html += '<td class="blank"></td>';
                 } else {
-                    html += '<td class="' + heading.type + '">';
-                    if (heading.type == "x-pixel" || heading.type == "y-pixel" || heading.type === "mag") {
-                        let value = Math.round(row[heading.id] * 10) / 10;
+                    html += '<td class="' + attribute.type + '">';
+                    if (attribute.type == "x-pixel" || attribute.type == "y-pixel" || attribute.type === "mag") {
+                        let value = Math.round(row[attribute.id] * 10) / 10;
                         html += value;
                         if (value % 1 == 0) {
                             html += ".0";
                         }
-                    } else if (heading.type === "ra") {
-                        html += Angle.printHours(row[heading.id]);
-                    } else if (heading.type === "dec") {
-                        html += Angle.printDegrees(row[heading.id]);
+                    } else if (attribute.type === "ra") {
+                        html += Angle.printHours(row[attribute.id]);
+                    } else if (attribute.type === "dec") {
+                        html += Angle.printDegrees(row[attribute.id]);
                     } else {
-                        html += row[heading.id];
+                        html += row[attribute.id];
                     }
-                    html += '</td>';
-                }
-            }
-            for (let heading of this.siteController.idAttributes) {
-                if (row[heading.id] === undefined) {
-                    html += '<td class="blank"></td>';
-                } else {
-                    html += '<td class="' + heading.type + '">';
-                    html += row[heading.id];
                     html += '</td>';
                 }
             }
             html += '</tr>'
         }
-        $("#" + this.tableId + " tbody").html(html);
-        for (let row of this.rows) {
+        $("#" + this._tableId + " tbody").html(html);
+        for (let row of this._rows) {
             $('#starRow' + row.id).click(() => {
                 this.printRow(row.id);
             });
@@ -104,7 +105,7 @@ class StarList {
     }
 
     printRow (rowId) {
-        this.siteController.selectItem(this, rowId);
+        this._siteController.selectItem(this, rowId);
     }
 
     setSelectedItem(caller, item) {
@@ -112,9 +113,11 @@ class StarList {
             return;
         }
 
-        for (let row of this.rows) {
+        for (let row of this._rows) {
             $('#starRow' + row.id).removeClass("selected");
         }
-        $("#starRow" + item.id).addClass("selected");
+        if (item !== undefined) {
+            $("#starRow" + item.id).addClass("selected");
+        }
     }
 }

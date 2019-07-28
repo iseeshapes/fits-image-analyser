@@ -1,70 +1,36 @@
-#starListBackground {
-    width: 100%;
-    height: 100%;
-
-    background-color: var(--popup-screen-background-colour);
-
-    position: fixed;
-    left: 0;
-    top: 0;
-}
-
-#starListContainer {
-    width: 800px;
-    height: 400px;
-    margin: 5px;
-
-    overflow: scroll ! important;
-
-    border: 1px solid var(--box-colour);
-    background-color: var(--row-background-colour);
-    position: fixed;
-    left: 200;
-    top: 100;
-}
-
-table.starTable tbody {
-	overflow: visible ! important; 
-}
-
-table.starTable tbody, table.starTable thead { 
-	display: block; 
-} 
-
-table.starTable, table.starTable th, table.starTable td { 
-	border: 1px solid black;
-	border-collapse: collapse;
-} 
-
-table.starTable th.x-pixel, table.starTable th.y-pixel, table.starTable td.x-pixel, table.starTable td.y-pixel {
+.star-list-table .x-pixel, .star-list-table .y-pixel {
 	width: 60px;
 }
 
-table.starTable th.ra, table.starTable th.dec, table.starTable td.ra, table.starTable td.dec {
+.star-list-table .ra, .star-list-table .dec {
 	width: 120px;
 }
 
-table.starTable th.mag, table.starTable td.mag {
+.star-list-table .mag {
 	width: 100px;
 }
 
-table.starTable td.x-pixel, table.starTable td.y-pixel, table.starTable td.mag {
+.star-list-table .id {
+    width: 200px;
+}
+
+.star-list-table td.x-pixel, .star-list-table td.y-pixel, .star-list-table td.mag {
 	text-align: right;
 }
 
-table.starTable td.ra, table.starTable td.dec {
+.star-list-table td.ra, .star-list-table td.dec {
 	text-align: center;
 }
 
-table.starTable td {
+.star-list-table td {
 	font-family: monospace;
 	font-size: 12px;
 }
 
-table.starTable th, table.starTable td {
+.star-list-table th, .star-list-table td {
 	padding: 2px 5px 2px 5px;
 }
 
-table.starTable tr.selected {
+.star-list-table tr.selected {
 	background-color: #ff5555;
 }
