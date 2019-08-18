@@ -12,8 +12,8 @@ class StarDetailsTable {
 
     createRow (attribute, item) {
         let html = '<tr>';
-        html += '<td class="attributeTitle">' + attribute.title + '</td>';
-        html += '<td class="attributeValue">';
+        html += '<td class="attributeTitle star-details-name">' + attribute.title + '</td>';
+        html += '<td class="attributeValue star-details-value">';
         if (item.getValue(attribute) !== undefined) {
             if (attribute.type == "x-pixel" || attribute.type == "y-pixel"
                     || attribute.type == "x-image" || attribute.type == "y-image"
@@ -36,7 +36,8 @@ class StarDetailsTable {
     }
 
     setSelectedItem (caller, item) {
-        let html = "";
+        let html = '<tr><th class="popup-table-heading star-details-name">Name</th>'
+            + '<th class="popup-table-heading star-details-value">Value</th></tr>';
         if (item !== undefined) {
             for (let attribute of CatalogItem.coreAttributes) {
                 html += this.createRow(attribute, item);

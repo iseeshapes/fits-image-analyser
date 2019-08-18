@@ -1,0 +1,11 @@
+#starDetailsContainer2 {
+    width: 400;
+}
+
+.star-details-name, .star-details-value {
+    width : 200px;
+}
+
+td.star-details-value {
+    border-left : var(--thick-table-border);
+}

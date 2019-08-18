@@ -21,17 +21,17 @@ class StarList {
 
         let html = '<tr>'
         for (let attribute of this._attributes) {
-            + '<th class="' + attribute.type + '">' + attribute.title + '</th>'
+            html += '<th class="star-list-' + attribute.type + '">' + attribute.title + '</th>'
         }
         html += '</tr>';
-        $("#" + this.tableId + " thead").html(html);
+        $("#" + this._tableId + " thead").html(html);
 
         this._rows = [];
-        for(let item of this._siteController.items) {
+        for(let item of this._siteController.image.items) {
             let row = {};
             row.id = item.id;
             for (let attribute of this._attributes) {
-                if (attribute.type === "id") {
+                if (attribute.type !== "id") {
                     row[attribute.id] = Number(item.getValue(attribute));
                 } else {
                     row[attribute.id] = item.getValue(attribute);
@@ -74,10 +74,8 @@ class StarList {
             html += '<tr id="starRow' + row.id + '">';
 
             for (let attribute of this._attributes) {
-                if (row[attribute.id] === undefined) {
-                    html += '<td class="blank"></td>';
-                } else {
-                    html += '<td class="' + attribute.type + '">';
+                html += '<td class="star-list-' + attribute.type + '">';
+                if (row[attribute.id] !== undefined) {
                     if (attribute.type == "x-pixel" || attribute.type == "y-pixel" || attribute.type === "mag") {
                         let value = Math.round(row[attribute.id] * 10) / 10;
                         html += value;
@@ -91,8 +89,8 @@ class StarList {
                     } else {
                         html += row[attribute.id];
                     }
-                    html += '</td>';
                 }
+                html += '</td>';
             }
             html += '</tr>'
         }

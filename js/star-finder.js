@@ -14,20 +14,34 @@ class StarFinder {
         this.width = image.width;
         this.height = image.height
 
-        this.average = 0;
-        for (let pixel of this.pixels) {
-            this.average += pixel;
-        }
-        this.average = this.average / this.pixels.length;
+        let minimum = 0;
+        let maximum = 65535;
+        for (let i=0;i<2;i++) {
+            let count = 0;
+            this.average = 0;
+            for (let pixel of this.pixels) {
+                if (minimum <= pixel && pixel <= maximum) {
+                    this.average += pixel;
+                    count++;
+                }
+            }
+            this.average = this.average / count;
 
-        this.standardDeviation = 0;
-        for (let pixel of this.pixels) {
-            this.standardDeviation += Math.pow(this.average - pixel, 2);
+            count = 0;
+            this.standardDeviation = 0;
+            for (let pixel of this.pixels) {
+                if (minimum <= pixel && pixel <= maximum) {
+                    this.standardDeviation += Math.pow(this.average - pixel, 2);
+                    count++;
+                }
+            }
+            this.standardDeviation = Math.sqrt(this.standardDeviation / count);
+            minimum = this.average - this.standardDeviation * 3;
+            maximum = this.average + this.standardDeviation * 3;
         }
-        this.standardDeviation = Math.sqrt(this.standardDeviation / this.pixels.length);
-        this.floor = this.average + this.standardDeviation / 2;
+        this.floor = this.average + this.standardDeviation * 3;
 
-        console.log("average: " + this.average + ", std dev: " + this.standardDeviation);
+        console.log("average: " + this.average + ", std dev: " + this.standardDeviation + ", floor: " + this.floor);
 
         let index = 0;
         let x;
@@ -36,7 +50,7 @@ class StarFinder {
             x = index % this.width;
             y = this.height - Math.floor(index / this.width) - 1;
 
-            if (pixel > this.average + this.standardDeviation) {
+            if (pixel > this.floor) {
                 let found = false;
                 for (let star of this.stars) {
                     if (Math.sqrt(Math.pow(star.x - x, 2) + Math.pow(star.y - y, 2)) < star.size) {
@@ -126,10 +140,13 @@ class StarFinder {
         let index;
         while (true) {
             index = this.getIndex(x, y);
-            if (x - 1 < 0 || this.pixels[index] < this.floor) {
+            if (this.pixels[index] < this.average) {
                 break;
             }
             x--;
+            if (x < 0) {
+                return null;
+            }
         }
         return x;
     }
@@ -138,10 +155,13 @@ class StarFinder {
         let index;
         while (true) {
             index = this.getIndex(x, y);
-            if (x + 1 >= this.width || this.pixels[index] < this.floor) {
+            if (this.pixels[index] < this.average) {
                 break;
             }
             x++;
+            if (x >= this.width) {
+                return null;
+            }
         }
         return x;
     }
@@ -150,10 +170,13 @@ class StarFinder {
         let index;
         while (true) {
             index = this.getIndex(x, y);
-            if (y <= 0 || this.pixels[index] < this.floor) {
+            if (this.pixels[index] < this.average) {
                 break;
             }
             y--;
+            if (y <= 0) {
+                return null;
+            }
         }
         return y;
     }
@@ -162,10 +185,13 @@ class StarFinder {
         let index;
         while (true) {
             index = this.getIndex(x, y);
-            if (y + 1 >= this.height || this.pixels[index] < this.floor) {
+            if (this.pixels[index] < this.average) {
                 break;
             }
             y++;
+            if (y >= this.height) {
+                return null;
+            }
         }
         return y;
     }
@@ -175,19 +201,24 @@ class StarFinder {
         let xCenterMass = 0;
         let yCenterMass = 0;
         let totalMass = 0;
+        let peakValue = 0;
         for (let x=xMin;x<=xMax;x++) {
             for (let y=yMin;y<=yMax;y++) {
                 index = this.getIndex(x, y);
                 xCenterMass += this.pixels[index] * x;
                 yCenterMass += this.pixels[index] * y;
                 totalMass += this.pixels[index];
+                if (this.pixels[index] >= peakValue) {
+                    peakValue = this.pixels[index];
+                }
             }
         }
 
         return {
             x : xCenterMass / totalMass,
             y : yCenterMass / totalMass,
-            size : Math.sqrt(Math.pow(xMax - xMin, 2) + Math.pow(yMax - yMin, 2))
+            size : Math.sqrt(Math.pow(xMax - xMin, 2) + Math.pow(yMax - yMin, 2)),
+            peakValue : peakValue
         };
     }
 
@@ -198,13 +229,29 @@ class StarFinder {
         if (starCoords === null) {
             return null;
         }
-        let xMin = this.calculateXMin(starCoords.x, starCoords.y);
-        let xMax = this.calculateXMax(starCoords.x, starCoords.y);
-        let yMin = this.calculateYMin(starCoords.x, starCoords.y);
-        let yMax = this.calculateYMax(starCoords.x, starCoords.y);
 
-        if (xMin >= xMax || yMin >= yMax) {
-            console.log("xMin: " + xMin + ", xMax: " + xMax + ", yMin: " + yMin + ", yMax: " + yMax);
+        let xMin = this.calculateXMin(starCoords.x, starCoords.y);
+        if (xMin === null) {
+            return null;
+        }
+
+        let xMax = this.calculateXMax(starCoords.x, starCoords.y);
+        if (xMax === null) {
+            return null;
+        }
+
+        let yMin = this.calculateYMin(starCoords.x, starCoords.y);
+        if (yMin === null) {
+            return null;
+        }
+
+        let yMax = this.calculateYMax(starCoords.x, starCoords.y);
+        if (yMax === null) {
+            return null;
+        }
+
+        if (xMax - xMin < 7 || yMax - yMin < 7) {
+            //console.log("xMin: " + xMin + ", xMax: " + xMax + ", yMin: " + yMin + ", yMax: " + yMax);
             return null;
         }
 

@@ -13,7 +13,10 @@
     --control-text-color: hsla(200, 5%, 95%, 1);
     --control-background-color: hsla(20, 75%, 15%, 1);
     --control-disabled-text-color: hsla(0, 5%, 95%, 1);;
-    --control-disabled-background-color: hsla(0, 5%, 95%, 1);;
+    --control-disabled-background-color: hsla(0, 5%, 95%, 1);
+
+    --thin-table-border: 1px solid var(--control-background-color);
+    --thick-table-border: 3px solid var(--control-background-color);
 }
 
 body {
@@ -69,12 +72,22 @@ div.popup-background {
 
     background-color: var(--popup-screen-background-colour);
 
+    text-align: center;
+
     position: fixed;
     left: 0;
     top: 0;
 }
 
-div.popup-container {
+div.popup-container1 {
+    width: 100%;
+    top: 400px;
+    margin-top: -200px;
+
+    position: fixed;
+}
+
+div.popup-container2 {
     width: 800px;
     height: 400px;
     margin: 5px;
@@ -83,18 +96,21 @@ div.popup-container {
 
     border: 1px solid var(--box-colour);
     background-color: var(--row-background-colour);
-    position: fixed;
-    left: 200;
-    top: 100;
+    position: inline-block;
+    margin: 0px auto;
 }
 
-div.popup-table thead {
-    width: fit-content;
+table.popup-table {
+    table-layout: fixed;
+}
+
+table.popup-table thead {
     overflow: visible ! important;
+    font-weight: bold;
+    font-size: 18px;
 }
 
 table.popup-table tbody {
-    width: fit-content;
 	overflow: visible ! important;
 }
 
@@ -103,6 +119,10 @@ table.popup-table tbody, table.popup-table thead {
 }
 
 table.popup-table, table.popup-table th, table.popup-table td {
-	border: 1px solid black;
+	border: var(--thin-table-border);
 	border-collapse: collapse;
+}
+
+table.popup-table, table.popup-table th {
+    border: var(--thick-table-border);
 }

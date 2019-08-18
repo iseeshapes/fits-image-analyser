@@ -86,7 +86,38 @@
         <div class="row">
             <div id="image-container" class="row-container">
                 <canvas id="canvas"></canvas>
-                <svg id="image" class="image" />
+                <svg id="image" class="image">
+                    <defs>
+                        <svg id="catalog-star" viewBox="-2 -2 4 4">
+                            <path d="M  0.0  ,-2.0
+                                     L -1.732, 1.0
+                                     L  1.732, 1.0
+                                     Z
+                                     M 0, -0.9
+                                     A 0.9 0.9 0 1 1 0  0.9
+                                     A 0.9 0.9 0 1 1 0 -0.9
+                                     Z"/>
+                             <path d="M  0.0  ,-2.0
+                                      L -1.732, 1.0
+                                      L  1.732, 1.0
+                                      Z" class="overlay" />
+                         </svg>
+
+                        <svg id="image-star" viewBox="-2 -2 4 4">
+                            <!--rect x="-1" y="-1" width="2" height="2" class="overlay" /-->
+                            <path d="M -1.0,-1.0
+                                     L -1.0, 1.0
+                                     L  1.0, 1.0
+                                     L  1.0,-1.0
+                                     Z
+                                     M 0, -0.9
+                                     A 0.9 0.9 0 1 1 0  0.9
+                                     A 0.9 0.9 0 1 1 0 -0.9
+                                     Z" />
+                            <rect x="-2" y="-2" width="4" height="4" class="overlay" />
+                        </svg>
+                    </defs>
+                </svg>
             </div>
         </div>
     </body>
@@ -103,102 +134,116 @@
     </div>
 
     <div id="starListBackground" class="popup-background" style="display: none">
-        <div id="starListContainer" class="popup-container">
-            <table id="starList" class="popup-table star-list-table">
-                <thead>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
+        <div id="starListContainer1" class="popup-container1">
+            <div id="starListContainer2" class="popup-container2">
+                <table id="starListTable" class="popup-table star-list-table">
+                    <thead>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
     <div id="starDetailsBackground" class="popup-background" style="display: none">
-        <div id="starDetailsContainer" class="popup-container">
-            <table id="starDetailsTable" class="popup-table star-details-table">
-                <thead>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
+        <div id="starDetailsContainer1" class="popup-container1">
+            <div id="starDetailsContainer2" class="popup-container2">
+                <table id="starDetailsTable" class="popup-table star-details-table">
+                    <thead>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
     <script>
-        let siteController = new SiteController();
-        let fitsHeaderTable = new FitsHeaderTable("fitsHeaderTable", siteController);
-        let starSelector = new StarSelector("catalogSelector", "catalogItemSelector", siteController);
-        let starList = new StarList("starList", siteController);
-        let starDetailsTable = new StarDetailsTable("starDetailsTable", siteController);
-        let starDetailsButton = new StarDetailsButton("starDetailsButton", siteController);
-        let imageOverlay = new ImageOverlay("image", siteController);
-        let fitsImage = new FitsImage("canvas", siteController);
-        siteController.addSearchListener(fitsHeaderTable);
-        siteController.addSearchListener(starSelector);
-        siteController.addSearchListener(starList);
-        siteController.addSearchListener(starDetailsTable);
-        siteController.addSearchListener(starDetailsButton);
-        siteController.addSearchListener(imageOverlay);
+        $(function() {
+            let siteController = new SiteController();
+            let fitsHeaderTable = new FitsHeaderTable("fitsHeaderTable", siteController);
+            let starSelector = new StarSelector("catalogSelector", "catalogItemSelector", siteController);
+            let starList = new StarList("starListTable", siteController);
+            let starDetailsTable = new StarDetailsTable("starDetailsTable", siteController);
+            let starDetailsButton = new StarDetailsButton("starDetailsButton", siteController);
+            let imageOverlay = new ImageOverlay("image", siteController);
+            let fitsImage = new FitsImage("canvas", siteController);
+            siteController.addSearchListener(fitsHeaderTable);
+            siteController.addSearchListener(starSelector);
+            siteController.addSearchListener(starList);
+            siteController.addSearchListener(starDetailsTable);
+            siteController.addSearchListener(starDetailsButton);
+            siteController.addSearchListener(imageOverlay);
 
-        siteController.addDataListener(fitsImage);
+            siteController.addDataListener(fitsImage);
 
-        $("#zoom").change(() => {
-            var zoom = $("#zoom").val();
-            imageOverlay.zoom(zoom);
-            fitsImage.zoom(zoom);
-        });
+            $("#zoom").change(() => {
+                var zoom = $("#zoom").val();
+                imageOverlay.zoom(zoom);
+                fitsImage.zoom(zoom);
+            });
 
-        $("#fitsHeaderButton").click(() => {
-            $("#fitsHeaderBackground").css("display", "inline-block");
-        });
+            $("#fitsHeaderButton").click(() => {
+                $("#fitsHeaderBackground").css("display", "inline-block");
+            });
 
-        $("#fitsHeaderBackground").click(() => {
-            $("#fitsHeaderBackground").css("display", "none");
-        });
+            $("#fitsHeaderBackground").click(() => {
+                $("#fitsHeaderBackground").css("display", "none");
+            });
 
-        $("#starListButton").click(() => {
-            $("#starListBackground").css("display", "inline-block");
-        });
+            $("#starListButton").click(() => {
+                $("#starListBackground").css("display", "inline-block");
+            });
 
-        $("#starListBackground").click(() => {
-            $("#starListBackground").css("display", "none");
-        });
+            $("#starListBackground").click(() => {
+                $("#starListBackground").css("display", "none");
+            });
 
-        $("#starDetailsButton").click(() => {
-            $("#starDetailsBackground").css("display", "inline-block");
-        });
+            $("#starListContainer2").click((e) => {
+                e.stopPropagation();
+            });
 
-        $("#starDetailsBackground").click(() => {
-            $("#starDetailsBackground").css("display", "none");
-        });
+            $("#starDetailsButton").click(() => {
+                $("#starDetailsBackground").css("display", "inline-block");
+            });
 
-        function loadFile(file) {
-            if(!file) {
-                return;
+            $("#starDetailsBackground").click(() => {
+                $("#starDetailsBackground").css("display", "none");
+            });
+
+            $("#starDetailsContainer2").click((e) => {
+                e.stopPropagation();
+            });
+
+            function loadFile(file) {
+                if(!file) {
+                    return;
+                }
+                let reader = new FileReader();
+                reader.onload = function(e) {
+                    var contents = e.target.result;
+                    siteController.loadData(contents);
+                };
+                reader.readAsArrayBuffer(file);
             }
-            let reader = new FileReader();
-            reader.onload = function(e) {
-                var contents = e.target.result;
-                siteController.loadData(contents);
-            };
-            reader.readAsArrayBuffer(file);
-        }
 
-        $("#fileInput").change(e => {
-            console.log(e.target.files[0]);
-            loadFile(e.target.files[0]);
+            $("#fileInput").change(e => {
+                console.log(e.target.files[0]);
+                loadFile(e.target.files[0]);
+            });
+
+            let oReq = new XMLHttpRequest();
+            oReq.open("GET", "/data/Horus_Light_20_secs_2019-01-30T23-14-59_005.new", true);
+            oReq.responseType = "arraybuffer";
+
+            oReq.onload = function (oEvent) {
+              let arrayBuffer = oReq.response; // Note: not oReq.responseText
+              if (arrayBuffer) {
+                  siteController.loadData(arrayBuffer);
+              }
+            }
+            oReq.send(null);
         });
-
-        let oReq = new XMLHttpRequest();
-        oReq.open("GET", "/data/Horus_Light_20_secs_2019-01-30T23-14-59_005.new", true);
-        oReq.responseType = "arraybuffer";
-
-        oReq.onload = function (oEvent) {
-          let arrayBuffer = oReq.response; // Note: not oReq.responseText
-          if (arrayBuffer) {
-              siteController.loadData(arrayBuffer);
-          }
-        }
-        oReq.send(null);
     </script>
 </html>

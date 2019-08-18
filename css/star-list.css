@@ -1,24 +1,24 @@
-.star-list-table .x-pixel, .star-list-table .y-pixel {
-	width: 60px;
-}
-
-.star-list-table .ra, .star-list-table .dec {
-	width: 120px;
-}
-
-.star-list-table .mag {
+.star-list-x-pixel, .star-list-y-pixel {
 	width: 100px;
 }
 
-.star-list-table .id {
+.star-list-ra, .star-list-dec {
+	width: 120px;
+}
+
+.star-list-mag {
+	width: 100px;
+}
+
+.star-list-id {
     width: 200px;
 }
 
-.star-list-table td.x-pixel, .star-list-table td.y-pixel, .star-list-table td.mag {
+td.star-list-x-pixel, td.star-list-y-pixel, td.star-list-mag {
 	text-align: right;
 }
 
-.star-list-table td.ra, .star-list-table td.dec {
+td.star-list-ra, td.star-list-dec {
 	text-align: center;
 }
 

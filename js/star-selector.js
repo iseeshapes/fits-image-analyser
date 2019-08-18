@@ -16,7 +16,6 @@ class StarSelector {
                 this.clearCatalogItemSelector();
                 return;
             }
-            value = Number(value);
             this.setSelectedCatalog(value);
         });
 
@@ -63,17 +62,17 @@ class StarSelector {
         this.clearCatalogItemSelector();
     }
 
-    setSelectedCatalog (catalogId) {
+    setSelectedCatalog (attributeId) {
         this.clearCatalogItemSelector();
 
         let catalogItemSelector = $("#" + this.catalogItemSelectorId);
-        for(let item of this.siteController.items) {
-            if (item.attributes[catalogId] === undefined) {
+        for(let item of this.siteController.image.items) {
+            if (item.getValueById(attributeId) === undefined) {
                 continue;
             }
             catalogItemSelector.append($("<option>", {
-                value: item.id,
-                text: item.attributes[catalogId]
+                value: item.getId(),
+                text: item.getValueById(attributeId)
             }));
         }
     }

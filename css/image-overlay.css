@@ -22,28 +22,51 @@ svg.image {
     --label-background-colour: hsla(219, 82%, 95%, 0.1);
     --label-border-colour: hsla(219, 75%, 25%, 0.1);
 
-    --catalog-star-colour: rgba(255, 255, 255, 0);
-    --catalog-star-stroke-colour: hsla(227, 95%, 60%, 1);
+    --star-stroke-width: 0.01px;
+    --low-star-colour: rgba(50, 50, 180, 0.7);
+    --good-star-colour: rgba(50, 180, 50, 0.7);
+    --high-star-colour: rgba(180, 50, 50, 0.7);
+    --saturated-star-colour: rgba(180, 50, 50, 0.7);
+
     --selected-catalog-star-colour: rgba(255, 255, 255, 0);
     --selected-catalog-star-stroke-colour: hsla(131, 95%, 45%, 1);
-    --image-star-colour: rgba(255, 255, 255, 0);
-    --image-star-stroke-colour: hsla(0, 95%, 45%, 1);
+    --image-star-colour: rgba(200, 50, 50, 0.7);
+    --image-star-stroke-colour: rgba(180, 45, 45, 0.7);
+    --saturated-image-star-colour: rgba(200, 255, 255, 0);
+    --saturated-image-star-stroke-colour: hsla(61, 95%, 45%, 1);
 
     position: absolute;
     top: 0;
     left: 0;
 }
 
-svg.image circle.catalogStar {
-    stroke: var(--catalog-star-stroke-colour);
-    stroke-width: 2px;
-    fill: var(--catalog-star-colour);
+svg.image .overlay {
+    stroke: rgba(0, 0, 0, 0);
+    fill: rgba(0, 0, 0, 0);
 }
 
-svg.image circle.imageStar {
-    stroke: var(--image-star-stroke-colour);
-    stroke-width: 2px;
-    fill: var(--image-star-colour);
+svg.image .photometry-low {
+    stroke: var(--low-star-colour);
+    stroke-width: var(--star-stroke-width);
+    fill: var(--low-star-colour);
+}
+
+svg.image .photometry-good {
+    stroke: var(--good-star-colour);
+    stroke-width: var(--star-stroke-width);
+    fill: var(--good-star-colour);
+}
+
+svg.image .photometry-high {
+    stroke: var(--high-star-colour);
+    stroke-width: var(--star-stroke-width);
+    fill: var(--high-star-colour);
+}
+
+svg.image .photometry-saturated {
+    stroke: var(--saturated-star-colour);
+    stroke-width: var(--star-stroke-width);
+    fill: var(--saturated-star-colour);
 }
 
 svg.image circle.selected {

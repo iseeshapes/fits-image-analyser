@@ -8,17 +8,19 @@ class CatalogItem {
 
     static setAttributes (searchResults) {
         CatalogItem.coreAttributes = [
-            { type: "x-pixel" , title : "X (WCS)"    , id: "-12"},
-            { type: "y-pixel" , title : "Y (WCS)"    , id: "-13"},
-            { type: "ra"      , title : "Right Ascension" },
-            { type: "dec"     , title : "Declination"     },
-            { type: "mag"     , title : "Visual Mag"      }
+            { type: "x-pixel" , title : "X (WCS)"         , id: "-12"},
+            { type: "y-pixel" , title : "Y (WCS)"         , id: "-13"},
+            { type: "ra"      , title : "Right Ascension"            },
+            { type: "dec"     , title : "Declination"                },
+            { type: "mag"     , title : "Visual Mag"                 }
         ];
 
         CatalogItem.imageAttributes = [
-          { type: "x-image" , title : "X (Image)"       , id : 1 },
-          { type: "y-image" , title : "Y (Image)"       , id : 2 },
-          { type: "size"    , title : "Image Size"      , id : 3 }
+          { type: "x-image"   , title : "X (Image)"  , id : 1 },
+          { type: "y-image"   , title : "Y (Image)"  , id : 2 },
+          { type: "size"      , title : "Image Size" , id : 3 },
+          { type: "saturated" , title : "Saturated"  , id : 4 },
+          { type: "peak"      , title : "Peak Value" , id : 5 }
         ];
 
         CatalogItem.idAttributes = [];
@@ -54,6 +56,8 @@ class CatalogItem {
     _id;
     _attributeValues = {};
     _imageValues = {};
+
+    photometry = "low";
 
     constructor (id, attributeValues) {
         this._id = id;
@@ -113,6 +117,10 @@ class CatalogItem {
             }
         }
         throw "Cannot find type " + type;
+    }
+
+    getValueById (attributeId) {
+        return this._attributeValues[attributeId];
     }
 
     getValue (attribute) {

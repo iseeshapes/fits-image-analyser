@@ -6,6 +6,8 @@ class Image {
     pixels = [];
     items = [];
 
+    _saturationValue = 65535;
+
     constructor (fileContents, fitsHeader, wcs) {
         this.width = fitsHeader.findNumber("NAXIS1");
         this.height = fitsHeader.findNumber("NAXIS2");
@@ -26,8 +28,10 @@ class Image {
         let increment;
         if (dataType === 8) {
             increment = 1;
+            this._saturationValue = 255;
         } else if (dataType === 16) {
             increment = 2;
+            this._saturationValue = 65535;
         } else if (dataType === -32) {
             increment = 4;
         } else {
@@ -81,6 +85,21 @@ class Image {
                 + ", Height: " + Angle.toDegrees(this.heightAngle));
     }
 
+    _calculatePhotomtricValues (item, star) {
+        let minimum = this._saturationValue * 0.15;
+        let maximum = this._saturationValue * 0.85;
+        if (star.peakValue >= this._saturationValue) {
+            item.photometry = "saturated"
+        } else if (star.peakValue < minimum) {
+            item.photometry = "low";
+        } else if (star.peakValue > maximum) {
+            item.photometry = "high";
+        } else {
+            item.photometry = "good";
+        }
+        item.setImageValue("peak", star.peakValue);
+    }
+
     createItems (searchResults) {
         CatalogItem.setAttributes(searchResults);
 
@@ -120,6 +139,7 @@ class Image {
                 item.setImageValue("x-image", starFinder.stars[closestStar].x);
                 item.setImageValue("y-image", starFinder.stars[closestStar].y);
                 item.setImageValue("size", starFinder.stars[closestStar].size);
+                this._calculatePhotomtricValues(item, starFinder.stars[closestStar]);
                 starFinder.stars.splice(closestStar, 1);
             }
         }
@@ -133,6 +153,7 @@ class Image {
                 item.setImageValue("x-image", starFinder.stars[i].x);
                 item.setImageValue("y-image", starFinder.stars[i].y);
                 item.setImageValue("size", starFinder.stars[i].size);
+                this._calculatePhotomtricValues(item, starFinder.stars[i]);
                 this.items.push(item);
             }
         }

@@ -10,7 +10,7 @@ class ImageOverlay {
 	_coordinatePrecision = 2;
     _magnitudePrecision = 1;
     _maxMagnitude = 17.0;
-    _starSizeDivisor = 5.0;
+    _starSizeDivisor = 5;
     _starSizeMultiplier = 5;
 
   	constructor (imageId, siteController) {
@@ -74,28 +74,30 @@ class ImageOverlay {
     }
 
     createStar (star) {
-  		let circle = ImageOverlay.makeSVG('circle', {
+        let shape = ImageOverlay.makeSVG('use', {
   			id: star.type + "Star" + star.id,
-  			class: star.type + "Star",
-  			cx: star.x,
-  			cy: star.y,
-  			r: star.size
+  			class: "star photometry-" + star.photometry,
+  			x: star.x - star.size * 2,
+  			y: star.y - star.size * 2,
+  			width: star.size * 4,
+            height: star.size * 4,
+            href: "#" + star.type + "-star"
   		});
 
-    	document.getElementById(this._imageId).appendChild(circle);
+    	document.getElementById(this._imageId).appendChild(shape);
         if (star.type === "catalog") {
-    	    circle.onclick = () => this._siteController.selectItem(this, star.id);
+    	    shape.onclick = () => this._siteController.selectItem(this, star.id);
         } else if (star.type === "image"){
-            circle.onclick = () => this._siteController.selectItem(this, undefined);
+            shape.onclick = () => this._siteController.selectItem(this, undefined);
         }
-        circle.onmouseenter = () => this.createLabel (star);
-        circle.onmouseleave = () => this.deleteLabel (star);
+        shape.onmouseenter = () => this.createLabel (star);
+        shape.onmouseleave = () => this.deleteLabel (star);
     }
 
     clear () {
-        let overlay = document.getElementById(this._imageId);
-        while (overlay.firstChild) {
-            overlay.removeChild(overlay.firstChild);
+        let shapes = document.querySelectorAll('.star');
+        for (let shape of shapes) {
+            shape.remove ();
         }
         this._stars = [];
     }
@@ -111,23 +113,35 @@ class ImageOverlay {
   		overlay.attr("height", height);
 
   		for (let item of image.items) {
+            let saturated = false;
+            if (item.isInImage()) {
+                saturated = item.getImageValue("saturated");
+            }
+
             if (item.isInCatalog()) {
-      			this._stars.push({
+      			let star = {
       				id : item.getId(),
       				x : item.getCoreValue("x-pixel"),
       				y : item.getCoreValue("y-pixel"),
       				size : this.calcStarSize(item.getCoreValue("mag")),
                     name : item.getName(),
-                    type: "catalog"
-      			});
+                    type: "catalog",
+                    photometry : "low"
+      			};
+                if (item.isInImage()) {
+                    star.size = item.getImageValue("size") / 2;
+                    star.photometry = item.photometry
+                }
+                this._stars.push(star);
             } else if (item.isInImage()) {
                 this._stars.push({
       				id : item.getId(),
-      				x : item.getImageValue(CatalogItem.imageAttributes[0].type),
-      				y : item.getImageValue(CatalogItem.imageAttributes[1].type),
-      				size : item.getImageValue(CatalogItem.imageAttributes[2].type),
+      				x : item.getImageValue("x-image"),
+      				y : item.getImageValue("y-image"),
+      				size : item.getImageValue("size"),
                     name : "No Catalog Item",
-                    type : "image"
+                    type : "image",
+                    photometry : item.photometry
                 });
             }
   		}
@@ -171,7 +185,7 @@ class ImageOverlay {
 
     zoom (zoom) {
         let overlay = $("#" + this._imageId);
-        overlay.attr("width", this._siteController.width * zoom);
-        overlay.attr("height", this._siteController.height * zoom);
+        overlay.attr("width", this._siteController.image.width * zoom);
+        overlay.attr("height", this._siteController.image.height * zoom);
     }
 }
