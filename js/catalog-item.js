@@ -51,6 +51,36 @@ class CatalogItem {
                 }
             }
         }
+
+        CatalogItem.idAttributes.sort((lhs, rhs) => {
+            let lhsScore;
+            if (lhs.title === "GCVS") {
+                lhsScore = -2;
+            } else if (lhs.title === "HD") {
+                lhsScore = -1;
+            } else {
+                lhsScore = lhs.id;
+            }
+
+            let rhsScore;
+            if (rhs.title === "GCVS") {
+                rhsScore = -2;
+            } else if (rhs.title === "HD") {
+                rhsScore = -1;
+            } else {
+                rhsScore = rhs.id;
+            }
+
+            if (lhsScore < rhsScore) {
+                return -1;
+            }
+
+            if (lhsScore > rhsScore) {
+                return 1;
+            }
+
+            return 0;
+        });
     }
 
     _id;
@@ -132,12 +162,34 @@ class CatalogItem {
         return this._attributeValues[attribute.id];
     }
 
-    getName () {
+    getBestIdAttribute () {
         for (let attribute of CatalogItem.idAttributes) {
             if (this._attributeValues[attribute.id] !== undefined) {
-                return attribute.title + ": " + this._attributeValues[attribute.id];
+                return attribute;
             }
         }
-        return "Unknown Star";
+        return undefined;
+    }
+
+    getName () {
+        let idAttribute = this.getBestIdAttribute ();
+        if (idAttribute === undefined) {
+            return "Unknown Star";
+        }
+        return idAttribute.title + " " + this._attributeValues[idAttribute.id];
+    }
+
+    isVariable () {
+        for (let idAttribute of CatalogItem.idAttributes) {
+            if (idAttribute.title === "GCVS") {
+                let value = this._attributeValues[idAttribute.id];
+                if (value !== undefined) {
+                    //console.log ("Found GVCS " + value);
+                    return true;
+                }
+                return false;
+            }
+        }
+        return false;
     }
 }

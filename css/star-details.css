@@ -1,11 +1,11 @@
-#starDetailsContainer2 {
+#catalogItemContainer2 {
     width: 400;
 }
 
-.star-details-name, .star-details-value {
+.catalog-item-name, .catalog-item-value {
     width : 200px;
 }
 
-td.star-details-value {
+td.catalog-item-value {
     border-left : var(--thick-table-border);
 }

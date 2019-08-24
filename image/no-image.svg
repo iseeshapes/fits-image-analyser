@@ -1,0 +1,63 @@
+<svg viewBox="0 0 800 600" width="800" height="600"
+    xmlns="http://www.w3.org/2000/svg">
+    <style>
+        .no-image-all {
+            stroke: rgb(205, 205, 205);
+            stroke-width: 1;
+        }
+
+        .no-image-background {
+            fill: rgb(240, 240, 240);
+        }
+
+        .no-image-chevron {
+            fill: rgb(210, 210, 210);
+        }
+
+        .no-image-text-container {
+            fill: rgb(210, 210, 210);
+        }
+
+        .no-image-text {
+            stroke: rgb(150, 150, 150);
+            fill: rgb(150, 150, 150);
+            font-family: "Lucida Console", Monaco, monospace;
+            font-size: 50px;
+        }
+    </style>
+    <defs>
+        <path d="M    0   0
+                 L  100   0
+                 L  300 300
+                 L  100 600
+                 L    0 600
+                 L  200 300
+                 Z" id="left-chevron" class="no-image-chevron no-image-all" />
+         <path d="M  200   0
+                  L  300   0
+                  L  100 300
+                  L  300 600
+                  L  200 600
+                  L    0 300
+                  Z" id="right-chevron" class="no-image-chevron no-image-all" />
+    </defs>
+    <rect x="0" y="0" width="800" height="600" class="no-image-background no-image-all" />
+    <use href="#left-chevron" x=" 100" y="0" />
+    <use href="#left-chevron" x="-100" y="0" />
+
+    <use href="#right-chevron" x="400" y="0" />
+    <use href="#right-chevron" x="600" y="0" />
+
+    <path d="M 300   0
+             L 400 150
+             L 500   0
+             Z" class="no-image-chevron no-image-all" />
+
+    <path d="M 300 600
+             L 400 450
+             L 500 600
+             Z" class="no-image-chevron no-image-all" />
+
+     <rect x="200" y="200" width="400" height="200" class="no-image-text-container no-image-all" />
+     <text x="280" y="315" width="400" height="200" class="no-image-text">No Image</text>
+</svg>

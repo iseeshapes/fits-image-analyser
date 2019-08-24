@@ -6,13 +6,12 @@ class FitsHeaderTable {
         this.controller = controller;
     }
 
-    dataLoaded() {
-        let html = '<thead><tr>'
-                    + '<th class="attribute">Attribute</th>'
-                    + '<th class="value">Value</th>'
-                    + '<th class="comment">Comment</th>'
-                    + '</tr></thead>';
-        html += '<tbody>'
+    clear () {
+        $("#fitsHeaderTable tbody").html("");
+    }
+
+    dataLoaded(image) {
+        let html = ""
         for (let headerItem of this.controller.fitsHeader.headerItems) {
             if (headerItem.name === "COMMENT") {
                 continue;
@@ -23,12 +22,14 @@ class FitsHeaderTable {
                     + '<td class="comment">' + headerItem.comment + '</td>'
                     + '</tr>';
         }
-        html += '</tbody>';
 
-        $("#fitsHeaderTable").html(html);
+        $("#fitsHeaderTable tbody").html(html);
     }
 
     setSelectedItem(caller, item) {
         //do nothing
+    }
+
+    overlayEnabled (enabled) {
     }
 }

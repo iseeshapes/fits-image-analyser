@@ -1,6 +1,6 @@
 'use strict';
 
-class StarList {
+class CatalogItemsTable {
     _tableId;
     _siteController;
     _rows;
@@ -8,6 +8,15 @@ class StarList {
     constructor(tableId, siteController) {
         this._tableId = tableId;
         this._siteController = siteController;
+    }
+
+    clear () {
+        this._rows = [];
+        this.writeRows ();
+    }
+
+    noImage () {
+        this.clear ();
     }
 
     dataLoaded() {
@@ -117,5 +126,8 @@ class StarList {
         if (item !== undefined) {
             $("#starRow" + item.id).addClass("selected");
         }
+    }
+
+    overlayEnabled (enabled) {
     }
 }

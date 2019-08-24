@@ -53,7 +53,7 @@ class StarFinder {
             if (pixel > this.floor) {
                 let found = false;
                 for (let star of this.stars) {
-                    if (Math.sqrt(Math.pow(star.x - x, 2) + Math.pow(star.y - y, 2)) < star.size) {
+                    if (Math.pow(star.x - x, 2) + Math.pow(star.y - y, 2) < star.sizeSquared) {
                         found = true;
                         break;
                     }
@@ -61,6 +61,7 @@ class StarFinder {
                 if (!found) {
                     let star = this.findStar(x, y);
                     if (star !== null) {
+                        star.sizeSquared = Math.pow(star.size, 2);
                         this.stars.push(star);
                     }
                 }

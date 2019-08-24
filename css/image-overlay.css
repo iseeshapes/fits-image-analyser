@@ -1,4 +1,4 @@
-#image-container {
+#imageContainer {
     width: auto;
     height: 500px;
     margin: 5px;
@@ -19,21 +19,16 @@ canvas {
 svg.image {
     --overlay-background: hsla(0, 0%, 100%, 1);
 
-    --label-background-colour: hsla(219, 82%, 95%, 0.1);
-    --label-border-colour: hsla(219, 75%, 25%, 0.1);
+    --label-background-colour: hsla(219, 82%, 95%, 0.2);
+    --label-border-colour: hsla(219, 75%, 25%, 0.2);
 
     --star-stroke-width: 0.01px;
-    --low-star-colour: rgba(50, 50, 180, 0.7);
-    --good-star-colour: rgba(50, 180, 50, 0.7);
-    --high-star-colour: rgba(180, 50, 50, 0.7);
-    --saturated-star-colour: rgba(180, 50, 50, 0.7);
-
-    --selected-catalog-star-colour: rgba(255, 255, 255, 0);
-    --selected-catalog-star-stroke-colour: hsla(131, 95%, 45%, 1);
-    --image-star-colour: rgba(200, 50, 50, 0.7);
-    --image-star-stroke-colour: rgba(180, 45, 45, 0.7);
-    --saturated-image-star-colour: rgba(200, 255, 255, 0);
-    --saturated-image-star-stroke-colour: hsla(61, 95%, 45%, 1);
+    --low-star-colour: rgba(76, 76, 181, 0.5);
+    --good-star-colour: rgba(76, 181, 76, 0.5);
+    --high-star-colour: rgba(181, 76, 76, 0.5);
+    --saturated-star-colour: rgba(181, 76, 76, 0.5);
+    --variable-star-colour: rgba(200, 50, 255, 1);
+    --selected-star-colour: rgba(230, 200, 50, 1);
 
     position: absolute;
     top: 0;
@@ -43,6 +38,34 @@ svg.image {
 svg.image .overlay {
     stroke: rgba(0, 0, 0, 0);
     fill: rgba(0, 0, 0, 0);
+}
+
+svg.image .no-image-hide {
+    display: none;
+}
+
+svg.image .no-image-all {
+    stroke: rgb(205, 205, 205);
+    stroke-width: 1;
+}
+
+svg.image .no-image-background {
+    fill: rgb(240, 240, 240);
+}
+
+svg.image .no-image-chevron {
+    fill: rgb(210, 210, 210);
+}
+
+svg.image .no-image-text-container {
+    fill: rgb(210, 210, 210);
+}
+
+svg.image .no-image-text {
+    stroke: rgb(150, 150, 150);
+    fill: rgb(150, 150, 150);
+    font-family: "Lucida Console", Monaco, monospace;
+    font-size: 50px;
 }
 
 svg.image .photometry-low {
@@ -69,14 +92,25 @@ svg.image .photometry-saturated {
     fill: var(--saturated-star-colour);
 }
 
-svg.image circle.selected {
-    stroke: var(--selected-catalog-star-stroke-colour);
-    fill: var(--selected-catalog-star-colour);
+svg.image .variable {
+    stroke: var(--variable-star-colour);
+    stroke-width: var(--star-stroke-width);
+    fill: var(--variable-star-colour);
+}
+
+svg.image .selected {
+    stroke: var(--selected-star-colour);
+    stroke-width: var(--star-stroke-width);
+    fill: var(--selected-star-colour);
+}
+
+svg.image .not-shown {
+    display: none;
 }
 
 svg.image text.starImageLabel {
     font-family: monaco, Consolas, "Lucida Console", monospace;
-    font-size: 16px;
+    font-size: 22px;
     stroke: var(--text-colour);
 }
 

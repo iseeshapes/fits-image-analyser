@@ -3,6 +3,7 @@
 class ImageOverlay {
 	_imageId;
 	_siteController;
+    _containerId;
     _lastSelectedStar = undefined;
 
 	_stars = [];
@@ -13,8 +14,9 @@ class ImageOverlay {
     _starSizeDivisor = 5;
     _starSizeMultiplier = 5;
 
-  	constructor (imageId, siteController) {
+  	constructor (imageId, containerId, siteController) {
     	this._imageId = imageId;
+        this._conatinerId = containerId;
     	this._siteController = siteController;
   	}
 
@@ -74,13 +76,33 @@ class ImageOverlay {
     }
 
     createStar (star) {
+        let width = star.size * 3;
+        let height = star.size * 3;
+        let x = star.x - width / 2;
+        let y = star.y - height / 2;
+
+        let ringClass = "star not-shown";
+        if (star.variable) {
+            ringClass = "star variable";
+        }
+        let ring = ImageOverlay.makeSVG('use', {
+            id: star.type + "StarRing" + star.id,
+            class: ringClass,
+            x : x,
+            y : y,
+            width: width,
+            height: height,
+            href: "#ring"
+        });
+        document.getElementById(this._imageId).appendChild(ring);
+
         let shape = ImageOverlay.makeSVG('use', {
   			id: star.type + "Star" + star.id,
   			class: "star photometry-" + star.photometry,
-  			x: star.x - star.size * 2,
-  			y: star.y - star.size * 2,
-  			width: star.size * 4,
-            height: star.size * 4,
+  			x: x,
+  			y: y,
+  			width: width,
+            height: height,
             href: "#" + star.type + "-star"
   		});
 
@@ -102,7 +124,14 @@ class ImageOverlay {
         this._stars = [];
     }
 
+    noImage () {
+        this.clear ();
+
+        $('.no-image').removeClass("no-image-hide");
+    }
+
   	dataLoaded (image) {
+        $('.no-image').addClass("no-image-hide");
         this.clear();
 
         let width = image.width;
@@ -126,7 +155,8 @@ class ImageOverlay {
       				size : this.calcStarSize(item.getCoreValue("mag")),
                     name : item.getName(),
                     type: "catalog",
-                    photometry : "low"
+                    photometry : "low",
+                    variable : item.isVariable()
       			};
                 if (item.isInImage()) {
                     star.size = item.getImageValue("size") / 2;
@@ -141,7 +171,8 @@ class ImageOverlay {
       				size : item.getImageValue("size"),
                     name : "No Catalog Item",
                     type : "image",
-                    photometry : item.photometry
+                    photometry : item.photometry,
+                    variable: false
                 });
             }
   		}
@@ -164,7 +195,13 @@ class ImageOverlay {
   	setSelectedItem (caller, item) {
         if (this._lastSelected !== undefined) {
             this.deleteLabel(this._lastSelected);
-            $('#catalogStar' + this._lastSelected.id).removeClass("selected");
+            let lastStar = $("#" + this._lastSelected.type + "StarRing" + this._lastSelected.id);
+            lastStar.removeClass("selected");
+            if (this._lastSelected.variable) {
+                lastStar.addClass("variable");
+            } else {
+                lastStar.addClass("not-shown");
+            }
         }
 
         this._lastSelected = undefined;
@@ -178,14 +215,31 @@ class ImageOverlay {
         }
 
         if (this._lastSelected !== undefined) {
-            $("#catalogStar" + this._lastSelected.id).addClass("selected");
+            let nextStar = $("#" + this._lastSelected.type + "StarRing" + this._lastSelected.id);
+            nextStar.removeClass("variable");
+            nextStar.removeClass("not-shown");
+            nextStar.addClass("selected");
             this.createLabel(this._lastSelected);
+
+            $("#" + this._containerId).animate({
+                scrollTop : nextStar.offset().top,
+                scrollLeft :nextStar.offset().left
+            });
+            ;
         }
   	}
 
-    zoom (zoom) {
+    zoom (caller, zoom) {
         let overlay = $("#" + this._imageId);
         overlay.attr("width", this._siteController.image.width * zoom);
         overlay.attr("height", this._siteController.image.height * zoom);
+    }
+
+    overlayEnabled (enabled) {
+        if (enabled) {
+            $('.star').removeClass("no-image-hide");
+        } else {
+            $('.star').addClass("no-image-hide");
+        }
     }
 }

@@ -10,6 +10,12 @@ class FitsImage {
         this._siteController = siteController;
     }
 
+    clear() {
+        this._pixels = []
+        this._width = 0;
+        this._height = 0;
+    }
+
     dataLoaded (image) {
         this._pixels = image.pixels;
         this._width = image.width;
@@ -79,7 +85,7 @@ class FitsImage {
         console.log("Put image data");
     }
 
-    zoom (zoom) {
+    zoom (caller, zoom) {
         let drawCanvas = document.createElement('canvas');
         if (zoom <= 1) {
             drawCanvas.width = this._width;

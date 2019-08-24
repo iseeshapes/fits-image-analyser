@@ -2,62 +2,61 @@
     <head>
         <link rel="stylesheet" type="text/css" href="css/site.css">
         <link rel="stylesheet" type="text/css" href="css/fits-header-table.css">
-        <link rel="stylesheet" type="text/css" href="css/star-list.css">
+        <link rel="stylesheet" type="text/css" href="css/catalog-items.css">
         <link rel="stylesheet" type="text/css" href="css/star-details.css">
         <link rel="stylesheet" type="text/css" href="css/image-overlay.css">
+
+        <script src="js/catalog-item.js"></script>
+        <script src="js/image.js"></script>
+        <script src="js/site-controller.js"></script>
+
+        <script src="js/control/catalog-item-button.js"></script>
+        <script src="js/control/catalog-items-button.js"></script>
+        <script src="js/control/catalog-item-selector.js"></script>
+        <script src="js/control/file-load-button.js"></script>
+        <script src="js/control/fits-header-button.js"></script>
+        <script src="js/control/image-overlay-button.js"></script>
+        <script src="js/control/zoom-selector.js"></script>
+
+        <script src="js/image/fits-image.js"></script>
+        <script src="js/image/image-overlay.js"></script>
+        <script src="js/image/star-finder.js"></script>
 
         <!--script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script-->
         <script src="js/lib/jquery.min.js"></script>
         <script src="js/lib/wcs.js"></script>
 
-        <script src="js/image.js"></script>
-        <script src="js/catalog-item.js"></script>
+        <script src="js/popup/catalog-item-table.js"></script>
+        <script src="js/popup/catalog-items-table.js"></script>
+        <script src="js/popup/fits-header-table.js"></script>
 
-        <script src="js/angle.js"></script>
-        <!--script src="js/sip-data.js"></script-->
-        <script src="js/fits-header.js"></script>
-        <script src="js/fits-image.js"></script>
-        <script src="js/fits-header-table.js"></script>
-        <script src="js/site-controller.js"></script>
-        <script src="js/star-selector.js"></script>
-        <script src="js/star-list.js"></script>
-        <script src="js/star-details-table.js"></script>
-        <script src="js/star-details-button.js"></script>
-        <script src="js/star-finder.js"></script>
-        <script src="js/image-overlay.js"></script>
-
-        <style type="text/css">
-        </style>
+        <script src="js/util/angle.js"></script>
+        <script src="js/util/fits-header.js"></script>
     </head>
     <body>
         <h1>Fits Image Analyser</h1>
 
-        <div class="row" style="display: none">
-            <div style="width: 900px">Upload a WCS FITS Header file below to create a map of the stars in your image.<p><a href="https://nova.astrometery.net">astronometry.net</a> can be used to create the WCS Header from your fits image.</div>
-        </div>
-
-        <div id="fileSelectRow" class="row">
-            <label for="fileInput">WCS File</label>
-            <input id="fileInput" type="file" />
-        </div>
-
         <div id="optionsRow" class="row">
+            <div class="row-container">
+                <label for="fileInput" id="fileLoadButton" class="menu">Load File</label>
+                <input id="fileInput" type="file" />
+            </div>
             <div class="row-container">
                 <button id="fitsHeaderButton" class="menu">Fits Header</button>
             </div>
             <div class="row-container">
-                <button id="starListButton" class="menu">Star Table</button>
+                <button id="catalogItemsButton" class="menu">Catalog Items</button>
             </div>
 
             <div id="selectCatalogContainer" class="row-container">
-                <div>Select Star</div>
+                <div>Item Selector</div>
                 <div>
-                    <select id="catalogSelector">
+                    <select id="catalogSelect" class="menu">
                         <option>No Catalog</option>
                     </select>
                 </div>
                 <div>
-                    <select id="catalogItemSelector">
+                    <select id="catalogItemSelect" class="menu">
                         <option>No Stars</option>
                     </select>
                 </div>
@@ -65,7 +64,7 @@
 
             <div id="zoomContainer" class="row-container">
                 <div>Zoom</div>
-                <select id="zoom">
+                <select id="zoomSelector" class="menu">
                     <option value="0.25">25%</option>
                     <option value="0.5">50%</option>
                     <option value="0.75">75%</option>
@@ -76,68 +75,136 @@
             </div>
 
             <div class="row-container">
-                <button id="starDetailsButton" class="menu">Show Details</button>
+                <button id="catalogItemButton" class="menu">Show Details</button>
             </div>
             <div class="row-container">
-                <button class="menu">Help</button>
+                <button id="imageOverlayButton" class="menu">Hide Overlay</button>
+            </div>
+            <div class="row-container">
+                <button id="helpButton" class="menu">Help</button>
             </div>
         </div>
 
         <div class="row">
-            <div id="image-container" class="row-container">
+            <div id="imageContainer" class="row-container">
                 <canvas id="canvas"></canvas>
-                <svg id="image" class="image">
+                <svg id="image" viewBox="0 0 800 600" class="image">
                     <defs>
-                        <svg id="catalog-star" viewBox="-2 -2 4 4">
-                            <path d="M  0.0  ,-2.0
-                                     L -1.732, 1.0
-                                     L  1.732, 1.0
-                                     Z
-                                     M 0, -0.9
-                                     A 0.9 0.9 0 1 1 0  0.9
-                                     A 0.9 0.9 0 1 1 0 -0.9
-                                     Z"/>
-                             <path d="M  0.0  ,-2.0
-                                      L -1.732, 1.0
-                                      L  1.732, 1.0
-                                      Z" class="overlay" />
-                         </svg>
+                        <path d="M    0   0
+                                 L  100   0
+                                 L  300 300
+                                 L  100 600
+                                 L    0 600
+                                 L  200 300
+                                 Z" id="left-chevron"
+                                 class="no-image-chevron no-image-all" />
+                        <path d="M  200   0
+                                 L  300   0
+                                 L  100 300
+                                 L  300 600
+                                 L  200 600
+                                 L    0 300
+                                 Z" id="right-chevron"
+                                 class="no-image-chevron no-image-all" />
 
-                        <svg id="image-star" viewBox="-2 -2 4 4">
-                            <!--rect x="-1" y="-1" width="2" height="2" class="overlay" /-->
-                            <path d="M -1.0,-1.0
-                                     L -1.0, 1.0
-                                     L  1.0, 1.0
-                                     L  1.0,-1.0
+                        <svg id="image-star" viewBox="-2.5 -2.5 5 5">
+                            <path d="M -1.414,-1.414
+                                     L -1.414, 1.414
+                                     L  1.414, 1.414
+                                     L  1.414,-1.414
                                      Z
-                                     M 0, -0.9
-                                     A 0.9 0.9 0 1 1 0  0.9
-                                     A 0.9 0.9 0 1 1 0 -0.9
+                                     M 0.0, -1.0
+                                     A 1.0 1.0 0 1 1 0  1.0
+                                     A 1.0 1.0 0 1 1 0 -1.0
                                      Z" />
-                            <rect x="-2" y="-2" width="4" height="4" class="overlay" />
+                            <rect x="-1.414" y="-1.414" width="2.828" height="2.828" class="overlay" />
                         </svg>
+
+                        <svg id="catalog-star" viewBox="-2.5 -2.5 5 5">
+                            <path d="M  0.0  , -1.85
+                                     L -1.76 , -0.572
+                                     L -1.087,  1.5
+                                     L  1.087,  1.5
+                                     L  1.76 , -0.572
+                                     Z
+                                     M 0.0, -1.0
+                                     A 1.0 1.0 0 1 1 0  1.0
+                                     A 1.0 1.0 0 1 1 0 -1.0
+                                     Z" />
+                            <path d="M  0.0  , -1.85
+                                     L -1.76 , -0.572
+                                     L -1.087,  1.5
+                                     L  1.087,  1.5
+                                     L  1.76 , -0.572
+                                     Z" class="overlay"/>
+                        </svg>
+
+                        <svg id="variable-star" viewBox="-2.5 -2.5 5 5">
+                            <path d="M  0.0  , -1.75
+                                     L -1.512, -0.875
+                                     L -1.512,  0.875
+                                     L  0.0  ,  1.75
+                                     L  1.512,  0.875
+                                     L  1.512, -0.875
+                                     Z
+                                     M 0.0, -1.0
+                                     A 1.0 1.0 0 1 1 0  1.0
+                                     A 1.0 1.0 0 1 1 0 -1.0
+                                     Z" />
+                            <path d="M  0.0  , -1.75
+                                     L -1.512, -0.875
+                                     L -1.512,  0.875
+                                     L  0.0  ,  1.75
+                                     L  1.512,  0.875
+                                     L  1.512, -0.875
+                                     Z" class="overlay" />
+                        </svg>
+
+                        <svg id="ring" viewBox="-2.5 -2.5 5 5">
+                            <path d="M 0, -2.5
+                                     A 2.5 2.5 0 1 0 0  2.5
+                                     A 2.5 2.5 0 1 0 0 -2.5
+                                     Z
+                                     M 0 ,-2.1
+                                     A 2.1 2.1 0 1 1 0  2.1
+                                     A 2.1 2.1 0 1 1 0 -2.1
+                                     Z" />
                     </defs>
+
+                    <rect x="0" y="0" width="800" height="600" class="no-image no-image-background no-image-all" />
+                    <use href="#left-chevron" x=" 100" y="0" class="no-image" />
+                    <use href="#left-chevron" x="-100" y="0" class="no-image" />
+
+                    <use href="#right-chevron" x="400" y="0" class="no-image" />
+                    <use href="#right-chevron" x="600" y="0" class="no-image" />
+
+                    <path d="M 300   0
+                             L 400 150
+                             L 500   0
+                             Z" class="no-image no-image-chevron no-image-all" />
+
+                    <path d="M 300 600
+                             L 400 450
+                             L 500 600
+                             Z" class="no-image no-image-chevron no-image-all" />
+
+                     <rect x="200" y="200" width="400" height="200" class="no-image no-image-text-container no-image-all" />
+                     <text x="280" y="315" width="400" height="200" class="no-image no-image-text">No Image</text>
                 </svg>
             </div>
         </div>
     </body>
 
     <div id="fitsHeaderBackground" class="popup-background" style="display: none">
-        <div id="fitsHeaderContainer" class="popup-container">
-            <table id="fitsHeaderTable" class="popup-table fits-header-table">
-                <thead>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <div id="starListBackground" class="popup-background" style="display: none">
-        <div id="starListContainer1" class="popup-container1">
-            <div id="starListContainer2" class="popup-container2">
-                <table id="starListTable" class="popup-table star-list-table">
+        <div id="fitsHeaderContainer1" class="popup-container1">
+            <div id="fitsHeaderContainer2" class="popup-container2">
+                <table id="fitsHeaderTable" class="popup-table fits-header-table">
                     <thead>
+                        <tr>
+                            <th class=".attribute">Attribute</th>
+                            <th class=".value">Value</th>
+                            <th class=".comment">Comment</th>
+                        </tr>
                     </thead>
                     <tbody>
                     </tbody>
@@ -146,11 +213,33 @@
         </div>
     </div>
 
-    <div id="starDetailsBackground" class="popup-background" style="display: none">
-        <div id="starDetailsContainer1" class="popup-container1">
-            <div id="starDetailsContainer2" class="popup-container2">
-                <table id="starDetailsTable" class="popup-table star-details-table">
+    <div id="catalogItemsBackground" class="popup-background" style="display: none">
+        <div id="catalogItemsContainer1" class="popup-container1">
+            <div id="catalogItemsContainer2" class="popup-container2">
+                <table id="catalogItemsTable" class="popup-table catalog-items-table">
                     <thead>
+                        <tr>
+                            <th class="attribute">Attribute</th>
+                            <th class="value">Value</th>
+                            <th class="comment">Comment</th>
+                        </tr>
+                    </thead>
+                <tbody>
+                </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div id="catalogItemBackground" class="popup-background" style="display: none">
+        <div id="catalogItemContainer1" class="popup-container1">
+            <div id="catalogItemContainer2" class="popup-container2">
+                <table id="catalogItemTable" class="popup-table catalog-item-table">
+                    <thead>
+                        <tr>
+                            <th class="popup-table-heading catalog-item-name">Name</th>
+                            <th class="popup-table-heading catalog-item-value">Value</th>
+                        </tr>
                     </thead>
                     <tbody>
                     </tbody>
@@ -162,88 +251,38 @@
     <script>
         $(function() {
             let siteController = new SiteController();
+            let fileLoadButton = new FileLoadButton("fileLoadButton", "fileInput", siteController);
             let fitsHeaderTable = new FitsHeaderTable("fitsHeaderTable", siteController);
-            let starSelector = new StarSelector("catalogSelector", "catalogItemSelector", siteController);
-            let starList = new StarList("starListTable", siteController);
-            let starDetailsTable = new StarDetailsTable("starDetailsTable", siteController);
-            let starDetailsButton = new StarDetailsButton("starDetailsButton", siteController);
-            let imageOverlay = new ImageOverlay("image", siteController);
+            let fitsHeaderButton = new FitsHeaderButton("fitsHeaderButton", "fitsHeaderBackground", "fitsHeaderContainer2", siteController);
+            let catalogItemSelector = new CatalogItemSelector("catalogSelect", "catalogItemSelect", siteController);
+            let catalogItemsTable = new CatalogItemsTable("catalogItemsTable", siteController);
+            let catalogItemsButton = new CatalogItemsButton("catalogItemsButton", "catalogItemsBackground", "catalogItemsContainer2", siteController);
+            let catalogItemTable = new CatalogItemTable("catalogItemTable", siteController);
+            let catalogItemButton = new CatalogItemButton("catalogItemButton", "catalogItemBackground", "catalogItemContainer2", siteController);
+            let zoomSelector = new ZoomSelector("zoomSelector", siteController);
+            let imageOverlayButton = new ImageOverlayButton("imageOverlayButton", siteController);
+            let imageOverlay = new ImageOverlay("image", "imageContainer", siteController);
             let fitsImage = new FitsImage("canvas", siteController);
-            siteController.addSearchListener(fitsHeaderTable);
-            siteController.addSearchListener(starSelector);
-            siteController.addSearchListener(starList);
-            siteController.addSearchListener(starDetailsTable);
-            siteController.addSearchListener(starDetailsButton);
+
+            siteController.addSearchListener(catalogItemSelector);
+            siteController.addSearchListener(catalogItemsTable);
+            siteController.addSearchListener(catalogItemsButton);
+            siteController.addSearchListener(catalogItemTable);
+            siteController.addSearchListener(catalogItemButton);
+            siteController.addSearchListener(imageOverlayButton);
             siteController.addSearchListener(imageOverlay);
 
+            siteController.addDataListener(fitsHeaderTable);
+            siteController.addDataListener(fitsHeaderButton);
+            siteController.addDataListener(zoomSelector);
             siteController.addDataListener(fitsImage);
 
-            $("#zoom").change(() => {
-                var zoom = $("#zoom").val();
-                imageOverlay.zoom(zoom);
-                fitsImage.zoom(zoom);
-            });
+            siteController.addZoomListener(imageOverlay);
+            siteController.addZoomListener(fitsImage);
+            siteController.addZoomListener(zoomSelector);
 
-            $("#fitsHeaderButton").click(() => {
-                $("#fitsHeaderBackground").css("display", "inline-block");
-            });
-
-            $("#fitsHeaderBackground").click(() => {
-                $("#fitsHeaderBackground").css("display", "none");
-            });
-
-            $("#starListButton").click(() => {
-                $("#starListBackground").css("display", "inline-block");
-            });
-
-            $("#starListBackground").click(() => {
-                $("#starListBackground").css("display", "none");
-            });
-
-            $("#starListContainer2").click((e) => {
-                e.stopPropagation();
-            });
-
-            $("#starDetailsButton").click(() => {
-                $("#starDetailsBackground").css("display", "inline-block");
-            });
-
-            $("#starDetailsBackground").click(() => {
-                $("#starDetailsBackground").css("display", "none");
-            });
-
-            $("#starDetailsContainer2").click((e) => {
-                e.stopPropagation();
-            });
-
-            function loadFile(file) {
-                if(!file) {
-                    return;
-                }
-                let reader = new FileReader();
-                reader.onload = function(e) {
-                    var contents = e.target.result;
-                    siteController.loadData(contents);
-                };
-                reader.readAsArrayBuffer(file);
-            }
-
-            $("#fileInput").change(e => {
-                console.log(e.target.files[0]);
-                loadFile(e.target.files[0]);
-            });
-
-            let oReq = new XMLHttpRequest();
-            oReq.open("GET", "/data/Horus_Light_20_secs_2019-01-30T23-14-59_005.new", true);
-            oReq.responseType = "arraybuffer";
-
-            oReq.onload = function (oEvent) {
-              let arrayBuffer = oReq.response; // Note: not oReq.responseText
-              if (arrayBuffer) {
-                  siteController.loadData(arrayBuffer);
-              }
-            }
-            oReq.send(null);
+            siteController.setOverlayEnabled(false);
+            siteController.noImage();
         });
     </script>
 </html>

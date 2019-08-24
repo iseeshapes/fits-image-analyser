@@ -46,7 +46,16 @@ div.row-container {
     flex: auto;
 }
 
-button.menu, select {
+#fileInput {
+    width: 0.1px;
+	height: 0.1px;
+	opacity: 0;
+	overflow: hidden;
+	position: absolute;
+	z-index: -1;
+}
+
+button.menu, select.menu, label.menu {
     font-size: 16px;
     color: var(--control-text-color);
     background-color: var(--control-background-color);
@@ -56,12 +65,12 @@ button.menu, select {
     margin-right: auto;
 }
 
-button.menu {
+button.menu, label.menu {
     height: 50px;
     border-radius: 5px;
 }
 
-button.menu:disabled {
+button.menu:disabled, select.menu:disabled {
     color: var(--disabled-control-text-color);
     background-color: var(--disabled-control-background-color);
 }

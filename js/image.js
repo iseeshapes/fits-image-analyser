@@ -52,6 +52,9 @@ class Image {
     }
 
     convertXYtoRaDec (x, y){
+        if (this.wcs === null) {
+            return { ra: 0, dec: 0 };
+        }
         let raDec = this.wcs.pix2sky (x, y);
         return {
             ra: Angle.toRadians(raDec[0]),
