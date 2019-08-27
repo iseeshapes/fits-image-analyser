@@ -1,23 +1,24 @@
 'use strict'
 
 class Image {
+    name = "Unknown";
     width = -1;
     height = -1;
     pixels = [];
     items = [];
+    wcs = null;
 
     _saturationValue = 65535;
 
-    constructor (fileContents, fitsHeader, wcs) {
+    constructor (filename, fileContents, fitsHeader) {
+        this.name = filename;
+
+        if (2 !== fitsHeader.findNumber("NAXIS")) {
+            throw "Wrong number of axises: " + this.fitsHeader.findNumber("NAXIS");
+        }
         this.width = fitsHeader.findNumber("NAXIS1");
         this.height = fitsHeader.findNumber("NAXIS2");
-        this.wcs = wcs;
 
-        this._createPixels (fileContents, fitsHeader);
-        this._getEquatorialStats ();
-    }
-
-    _createPixels (fileContents, fitsHeader) {
         let offset = fitsHeader.findNumber("BZERO");
         let scale = fitsHeader.findNumber("BSCALE");
         let dataType = fitsHeader.findNumber("BITPIX");
@@ -52,9 +53,6 @@ class Image {
     }
 
     convertXYtoRaDec (x, y){
-        if (this.wcs === null) {
-            return { ra: 0, dec: 0 };
-        }
         let raDec = this.wcs.pix2sky (x, y);
         return {
             ra: Angle.toRadians(raDec[0]),
@@ -62,7 +60,9 @@ class Image {
         };
     }
 
-    _getEquatorialStats () {
+    setWCS (wcs) {
+        this.wcs = wcs;
+
         let top          = this.convertXYtoRaDec(this.width/2, 0            );
         let bottom       = this.convertXYtoRaDec(this.width/2, this.height  );
         let left         = this.convertXYtoRaDec(0           , this.height/2);
@@ -76,6 +76,8 @@ class Image {
         this.rotation    = Math.atan((bottom.dec - top.dec) / (bottom.ra - top.ra));
         this.widthAngle  = Math.sqrt(Math.pow(right.ra - left.ra, 2) + Math.pow(right.dec - left.dec, 2));
         this.heightAngle = Math.sqrt(Math.pow(bottom.ra - top.ra, 2) + Math.pow(bottom.dec - top.dec, 2));
+        this.fieldOfView = Math.sqrt(Math.pow(this.topLeft.ra - this.bottomRight.ra, 2)
+                                + Math.pow(this.topLeft.dec - this.bottomRight.dec, 2));
         this.center      = {
             ra : left.ra + (right.ra - left.ra) / 2,
             dec: top.ra + (bottom.ra - top.ra) / 2

@@ -23,7 +23,7 @@ class FileLoadButton {
         let reader = new FileReader();
         reader.onload = (event) => {
             var contents = event.target.result;
-            this._siteController.loadData(contents);
+            this._siteController.loadData(file.name, contents);
         };
         reader.readAsArrayBuffer(file);
     }

@@ -8,7 +8,7 @@
     --small-margin-size: 5px;
 
     --row-border-color: hsla(200, 100%, 33%, 1);
-    --row-background-colour: hsla(200, 5%, 95%, 1);
+    --row-background-colour: hsla(200, 5%, 5%, 0.1);
 
     --control-text-color: hsla(200, 5%, 95%, 1);
     --control-background-color: hsla(20, 75%, 15%, 1);
@@ -30,13 +30,24 @@ h1 {
     font-size: 48px;
 }
 
-div.row {
+div.menu-row {
     background-color: var(--row-background-colour);
     border: 2px solid var(--box-color);
     margin: var(--large-margin-size);
     border-radius: 2px;
-    display: flex;
-    align-items: center;
+
+    z-index: 10;
+}
+
+.sticky-y {
+    position: fixed;
+    top: 0px;
+}
+
+.sticky-x {
+    position: fixed;
+    left: 0px;
+    top: 68px;
 }
 
 div.row-container {
@@ -73,6 +84,15 @@ button.menu, label.menu {
 button.menu:disabled, select.menu:disabled {
     color: var(--disabled-control-text-color);
     background-color: var(--disabled-control-background-color);
+}
+
+#imageContainer {
+    position: absolute;
+    top : 210px;
+    left : 13px;
+
+    border: 1px solid var(--box-colour);
+    display: inline-block; /* <= shrinks container to image size */
 }
 
 div.popup-background {

@@ -38,34 +38,29 @@ class SiteController {
         }
     }
 
-	loadData (fileContents) {
+	loadData (filename, fileContents) {
         let text = new TextDecoder('utf-8').decode(fileContents);
 
-		this.fitsHeader = new FitsHeader(text);
         try {
-            if (2 !== this.fitsHeader.findNumber("NAXIS")) {
-                throw "Wrong number of axises";
-            }
+            this.fitsHeader = new FitsHeader(text);
+            this.image = new Image(filename, fileContents, this.fitsHeader);
         } catch (e) {
-            alert("Invalid FITS File Not Loaded");
+            console.log(e);
+            alert("Invalid FITS File - see console log for details");
             return;
+        }
+
+        for (let listener of this._searchListeners) {
+            listener.clear();
         }
 
         try {
             this.fitsHeader.findString("CRPIX1");
-            this.wcs = new wcs();
-            this.wcs.init (text);
-        } catch (e) {
-            this.wcs = null;
-        }
+            let _wcs = new wcs();
+            _wcs.init (text);
 
-        this.image = new Image(fileContents, this.fitsHeader, this.wcs);
+            this.image.setWCS(_wcs);
 
-        for (let listener of this._dataListeners) {
-            listener.clear();
-        }
-
-        if (this.wcs !== null) {
             $.ajax({
              	type : "POST",
              	headers : {
@@ -83,9 +78,13 @@ class SiteController {
               		this.loadSearchResults(data);
               	},
             	error : function (jqXHR, textStatus, errorThrown) {
-                	console.log("AJAX Error:\n\nText Status: " + textStatus + "\nerrorThrown: " + errorThrown);
+                    console.log("AJAX Error:\n\nText Status: " + textStatus + "\nerrorThrown: " + errorThrown);
+                    alert("Error getting catalog items - see console log");
             	}
             });
+        } catch (e) {
+            //TO DO draw
+            console.log("Error: " + e);
         }
 
         for (let listener of this._dataListeners) {

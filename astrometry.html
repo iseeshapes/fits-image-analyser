@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head>
+        <meta charset="utf-8">
+        <title>Astrometry.net Options</title>
+        <!--script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script-->
+        <script src="js/lib/jquery.min.js"></script>
+    </head>
+    <body>
+        <table>
+            <tr>
+                <td><label for="overWright">Over Write</label></td>
+                <td><input type="checkbox" id="overWright" value="true" /></td>
+            </tr>
+            <tr>
+                <td><label for="noPlot">No Plot</label></td>
+                <td><input type="checkbox" id="noPlot" value="true" /></td>
+            </tr>
+            <tr>
+                <td><label for="ra">Right Ascension</label></td>
+                <td><input type="text" id="ra" value="" /></td>
+            </tr>
+            <tr>
+                <td><label for="dec">Declination</label></td>
+                <td><input type="text" id="dec" value="" /></td>
+            </tr>
+            <tr>
+                <td><label for="radius">Radius</label></td>
+                <td><input type="text" id="radius" value="" /></td>
+            </tr>
+            <tr>
+                <td><label for="scaleLow">Scale Low</label></td>
+                <td><input type="text" id="scaleLow" value="" /></td>
+            </tr>
+            <tr>
+                <td><label for="scaleHigh">Scale High</label></td>
+                <td><input type="text" id="scaleHigh" value="" /></td>
+            </tr>
+            <tr>
+                <td>Scale Units</td>
+                <td>
+                    <select id="scaleUnits">
+                        <option value="no value">None</option>
+                        <option value="arcsecperpix">Arcsec Per Pix</option>
+                        <option value="degwidth">Degrees Width</option>
+                        <option value="arcminwidth">Arcminute Width</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td><label for="downsample">Downsample</label></td>
+                <td><input type="text" id="downsample" value="" /></td>
+            </tr>
+            <tr>
+                <td><label for="dir">Directory</label></td>
+                <td><input type="text" id="dir" value="" /></td>
+            </tr>
+            <tr>
+                <td><label for="depth">Depth</label></td>
+                <td><input type="text" id="depth" value="" /></td>
+            </tr>
+            <tr>
+                <td><label for="resort">Resort</label></td>
+                <td><input type="checkbox" id="resort" value="false" /></td>
+            </tr>
+            <tr>
+                <td><label for="noVerify">No Verify</label></td>
+                <td><input type="checkbox" id="noVerify" value="false" /></td>
+            </tr>
+            <tr>
+                <td>Parity</td>
+                <td>
+                    <select id="parity">
+                        <option value="no value">None</option>
+                        <option value="pos">Positive</option>
+                        <option value="neg">Negative</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td><label for="verbose">Verbose</label></td>
+                <td><input type="checkbox" id="verbose" value="false" /></td>
+            </tr>
+            <tr>
+                <td><label for="filename">Filename</label></td>
+                <td><input type="text" id="filename" value="" /></td>
+            </tr>
+        </table>
+        <button type="button" id="loadButton">Load</button>
+        <textarea id="command" rows="8" cols="80"></textarea>
+        <script type="text/javascript">
+            function checkboxValue (id) {
+                if ($("#" + id).prop('checked')) {
+                    return true;
+                }
+                return undefined;
+            }
+
+            function convertRightAscension (id) {
+                let item = $("#" + id)
+                let value = item.val().trim();
+                if (value === "") {
+                    return undefined;
+                }
+                let group = null;
+                group = /(\d+)h\s?(\d+)m\s?(\d+(\.\d+)?)s/.exec(value); //ra wiki pattern
+                if (group == null) {
+                    group = /(\d+) (\d+) (\d+(\.\d+)?)/.exec(value); //ra wiki pattern
+                }
+                if (group != null) {
+                    item.css("color", "#000000");
+                    let hours = Number(group[1]);
+                    let minutes = Number(group[2]);
+                    let seconds = Number(group[3]);
+                    return (hours + minutes / 60 + seconds / 3600) * 15;
+                }
+                if (group == null) {
+                    group = /^[+-]?\d+(\.\d+)?$/.exec(value); // degrees pattern
+                }
+                if (group != null) {
+                    item.css("color", "#000000");
+                    return Number(group[0]);
+                }
+                //private static Pattern degreesPattern = Pattern.compile("\\d+(\\.\\d+)?");
+                //private static Pattern decWikiPattern = Pattern.compile("([+-]?\\d+)° (\\d+)′ (\\d+(.\\d+)?)″");
+                //private static Pattern decSexagesimalPattern = Pattern.compile("([+-]?\\d+)d (\\d+)m (\\d+(\\.\\d+)?)s");
+                item.css("color", "#ff0000");
+                return undefined;
+            }
+
+            function convertDeclination (id) {
+                let item = $("#" + id)
+                let value = item.val().trim();
+                if (value === "") {
+                    return undefined;
+                }
+                let group = null;
+                group = /([+-]?\d+)d\s?(\d+)m\s?(\d+(\.\d+)?)s/.exec(value); //dec letter pattern
+                if (group == null) {
+                    group = /([+-]?\d+)˚\s?(\d+)'\s?(\d+(\.\d+)?)"/.exec(value); //dec wiki pattern
+                }
+                if (group == null) {
+                    group = /(\d+) (\d+) (\d+(\.\d+)?)/.exec(value); //dec space pattern
+                }
+                if (group != null) {
+                    item.css("color", "#000000");
+                    let degrees = Number(group[1]);
+                    let minutes = Number(group[2]);
+                    let seconds = Number(group[3]);
+                    return degrees + minutes / 60 + seconds / 3600;
+                }
+                if (group == null) {
+                    group = /^[+-]?\d+(\.\d+)?$/.exec(value); // degrees pattern
+                }
+                if (group != null) {
+                    item.css("color", "#000000");
+                    return Number(group[0]);
+                }
+                //private static Pattern degreesPattern = Pattern.compile("\\d+(\\.\\d+)?");
+                //private static Pattern decWikiPattern = Pattern.compile("([+-]?\\d+)° (\\d+)′ (\\d+(.\\d+)?)″");
+                //private static Pattern decSexagesimalPattern = Pattern.compile("([+-]?\\d+)d (\\d+)m (\\d+(\\.\\d+)?)s");
+                item.css("color", "#ff0000");
+                return undefined;
+            }
+
+            $('#loadButton').click(() => {
+                let argument = {
+                    '--overwrite' : checkboxValue ("overWright"),
+                    '--no-plot' : checkboxValue ("noPlot"),
+                    '--ra' : convertRightAscension ("ra"),
+                    '--dec' : convertDeclination("dec"),
+                    '--radius' : $("#radius").val(),
+                    '--scale-low' : $("#scaleLow").val(),
+                    '--scale-high' : $("#scaleHigh").val(),
+                    '--scale-units' : $("#scaleUnits").val(),
+                    '--downsample' : $("#downsample").val(),
+                    '--dir' : $("#dir").val(),
+                    '--depth' : $("#depth").val(),
+                    '--resort' : checkboxValue ("resort"),
+                    '--no-verify' : checkboxValue ("noVerify"),
+                    '--parity' : $("#parity").val(),
+                    '--verbose' : checkboxValue ("verbose")
+                }
+                let filename = $("#filename").val();
+
+                let command = "solve-field"
+                for (let [key, value] of Object.entries(argument)) {
+                    if (value === true) {
+                        command += " " + key;
+                    } else if (value !== undefined && value !== "" && value != "no value") {
+                        command += " " + key + " " + value;
+                    }
+                }
+                if (filename !== undefined) {
+                    command += " " + filename;
+                }
+
+                $("#command").val(command);
+            });
+        </script>
+    </body>
+</html>

@@ -1,17 +1,3 @@
-#imageContainer {
-    width: auto;
-    height: 500px;
-    margin: 5px;
-
-    overflow: scroll ! important;
-
-    border: 1px solid var(--box-colour);
-
-    position: relative;
-    display: inline-block; /* <= shrinks container to image size */
-    transition: transform 150ms ease-in-out;
-}
-
 canvas {
     overflow: visible ! important;
 }

@@ -1,0 +1,138 @@
+<svg viewBox="0 0 85 55" width="850" height="550"
+    xmlns="http://www.w3.org/2000/svg">
+    <style>
+        .image-background {
+            fill: rgb(210, 210, 210);
+        }
+
+        use, text {
+            stroke-width: 0.01;
+        }
+
+        .low {
+            stroke: rgb(76, 76, 181);
+            fill: rgb(76, 76, 181);
+        }
+
+        .good {
+            stroke: rgb(76, 181, 76);
+            fill: rgb(76, 181, 76);
+        }
+
+        .high {
+            stroke: rgb(181, 76, 76);
+            fill: rgb(181, 76, 76);
+        }
+
+        .variable {
+            stroke: rgb(200, 50, 255);
+            fill: rgb(200, 50, 255);
+        }
+
+        .selected {
+            stroke: rgb(230, 200, 50);
+            fill: rgb(230, 200, 50);
+        }
+
+        .overlay {
+            stroke: rgba(0, 0, 0, 0);
+            fill: rgba(0, 0, 0, 0);
+        }
+
+        .text-background {
+            stroke: hsla(20, 75%, 15%, 1);
+            stroke-width: 0.1;
+            fill: rgb(230, 230, 230);
+        }
+
+        text {
+            font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+            font-size: 5px;
+            stroke: hsla(20, 75%, 15%, 1);
+            fill: hsla(20, 75%, 15%, 1);
+        }
+    </style>
+    <defs>
+        <svg id="image-star" viewBox="-2.5 -2.5 5 5">
+            <path d="M -1.414,-1.414
+                     L -1.414, 1.414
+                     L  1.414, 1.414
+                     L  1.414,-1.414
+                     Z
+                     M 0.0, -1.0
+                     A 1.0 1.0 0 1 1 0  1.0
+                     A 1.0 1.0 0 1 1 0 -1.0
+                     Z" />
+        </svg>
+
+        <svg id="catalog-star" viewBox="-2.5 -2.5 5 5">
+            <path d="M  0.0  , -1.85
+                     L -1.76 , -0.572
+                     L -1.087,  1.5
+                     L  1.087,  1.5
+                     L  1.76 , -0.572
+                     Z
+                     M 0.0, -1.0
+                     A 1.0 1.0 0 1 1 0  1.0
+                     A 1.0 1.0 0 1 1 0 -1.0
+                     Z" />
+        </svg>
+
+        <svg id="ring" viewBox="-2.5 -2.5 5 5">
+            <path d="M 0, -2.5
+                     A 2.5 2.5 0 1 0 0  2.5
+                     A 2.5 2.5 0 1 0 0 -2.5
+                     Z
+                     M 0 ,-2.1
+                     A 2.1 2.1 0 1 1 0  2.1
+                     A 2.1 2.1 0 1 1 0 -2.1
+                     Z" />
+        </svg>
+    </defs>
+
+    <rect x="0" y="0" width="85" height="55" class="image-background" />
+
+    <use href="#catalog-star" x="2"  y="40" width="15" height="15" class="high" />
+    <use href="#catalog-star" x="45" y="12" width="12" height="12" class="high" />
+    <use href="#image-star"   x="12" y="12" width="12" height="12" class="high" />
+    <use href="#catalog-star" x="34" y="50" width="10" height="10" class="good" />
+    <use href="#ring"         x="34" y="50" width="10" height="10" class="variable" />
+    <use href="#catalog-star" x="78" y="33" width="7"  height="7"  class="good" />
+    <use href="#catalog-star" x="56" y="17" width="7"  height="7"  class="good" />
+    <use href="#ring"         x="56" y="17" width="7"  height="7"  class="selected" />
+    <use href="#image-star"   x="30" y="38" width="7"  height="7"  class="good" />
+    <use href="#catalog-star" x="67" y="8"  width="7"  height="7"  class="good" />
+    <use href="#ring"         x="67" y="8"  width="7"  height="7"  class="variable" />
+    <use href="#catalog-star" x="32" y="44" width="5"  height="5"  class="good" />
+    <use href="#image-star"   x="50" y="31" width="5"  height="5"  class="good" />
+    <use href="#catalog-star" x="12" y="32" width="5"  height="5"  class="good" />
+    <use href="#catalog-star" x="8"  y="23" width="5"  height="5"  class="good" />
+    <use href="#image-star"   x="72" y="24" width="4"  height="4"  class="good" />
+    <use href="#catalog-star" x="59" y="13" width="4"  height="4"  class="low" />
+    <use href="#ring"         x="59" y="13" width="4"  height="4"  class="variable" />
+    <use href="#catalog-star" x="82" y="34" width="4"  height="4"  class="low" />
+    <use href="#catalog-star" x="78" y="5"  width="4"  height="4"  class="low" />
+    <use href="#image-star"   x="70" y="8"  width="4"  height="4"  class="low" />
+    <use href="#catalog-star" x="32" y="15" width="4"  height="4"  class="low" />
+    <use href="#catalog-star" x="23" y="38" width="3"  height="3"  class="low" />
+    <use href="#ring"         x="23" y="38" width="3"  height="3"  class="variable" />
+    <use href="#catalog-star" x="49" y="50" width="3"  height="3"  class="low" />
+    <use href="#catalog-star" x="32" y="27" width="3"  height="3"  class="low" />
+    <use href="#catalog-star" x="67" y="11" width="3"  height="3"  class="low" />
+    <use href="#image-star"   x="49" y="42" width="3"  height="3"  class="low" />
+    <use href="#catalog-star" x="55" y="4"  width="2"  height="2"  class="low" />
+    <use href="#catalog-star" x="43" y="42" width="2"  height="2"  class="low" />
+    <use href="#catalog-star" x="9"  y="47" width="2"  height="2"  class="low" />
+    <use href="#catalog-star" x="32" y="10" width="2"  height="2"  class="low" />
+    <use href="#image-star"   x="12" y="23" width="2"  height="2"  class="low" />
+    <use href="#image-star"   x="17" y="50" width="2"  height="2"  class="low" />
+    <use href="#image-star"   x="29" y="43" width="2"  height="2"  class="low" />
+    <use href="#image-star"   x="8"  y="2"  width="2"  height="2"  class="low" />
+    <use href="#image-star"   x="52" y="9"  width="2"  height="2"  class="low" />
+
+    <!--rect x="20" y="24" width="45" height="9" class="text-background" />
+    <text x="21" y="30">FITS Image Analyser</text-->
+
+    <rect x="18" y="25" width="50" height="7" class="text-background" />
+    <text x="20" y="30">FITS Image Analyser</text>
+</svg>

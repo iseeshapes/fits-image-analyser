@@ -15,6 +15,7 @@
         <script src="js/control/catalog-item-selector.js"></script>
         <script src="js/control/file-load-button.js"></script>
         <script src="js/control/fits-header-button.js"></script>
+        <script src="js/control/image-info-text.js"></script>
         <script src="js/control/image-overlay-button.js"></script>
         <script src="js/control/zoom-selector.js"></script>
 
@@ -34,164 +35,166 @@
         <script src="js/util/fits-header.js"></script>
     </head>
     <body>
-        <h1>Fits Image Analyser</h1>
+        <h1>Fits Image Analyser (Beta)</h1>
 
-        <div id="optionsRow" class="row">
-            <div class="row-container">
-                <label for="fileInput" id="fileLoadButton" class="menu">Load File</label>
-                <input id="fileInput" type="file" />
-            </div>
-            <div class="row-container">
-                <button id="fitsHeaderButton" class="menu">Fits Header</button>
-            </div>
-            <div class="row-container">
-                <button id="catalogItemsButton" class="menu">Catalog Items</button>
-            </div>
+        <div id="controlsContainer" class="menu-row">
+            <div id="optionsRow">
+                <div class="row-container">
+                    <label for="fileInput" id="fileLoadButton" class="menu">Select FITS Image</label>
+                    <input id="fileInput" type="file" />
+                </div>
+                <div class="row-container">
+                    <button id="fitsHeaderButton" class="menu">Fits Header</button>
+                </div>
+                <div class="row-container">
+                    <button id="catalogItemsButton" class="menu">Catalog Items</button>
+                </div>
 
-            <div id="selectCatalogContainer" class="row-container">
-                <div>Item Selector</div>
-                <div>
-                    <select id="catalogSelect" class="menu">
-                        <option>No Catalog</option>
+                <div id="selectCatalogContainer" class="row-container">
+                    <div>Item Selector</div>
+                    <div>
+                        <select id="catalogSelect" class="menu">
+                            <option>No Catalog</option>
+                        </select>
+                    </div>
+                    <div>
+                        <select id="catalogItemSelect" class="menu">
+                            <option>No Stars</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="zoomContainer" class="row-container">
+                    <div>Zoom</div>
+                    <select id="zoomSelector" class="menu">
+                        <option value="0.25">25%</option>
+                        <option value="0.5">50%</option>
+                        <option value="0.75">75%</option>
+                        <option value="1">100%</option>
+                        <option value="2">200%</option>
+                        <option value="4">400%</option>
                     </select>
                 </div>
-                <div>
-                    <select id="catalogItemSelect" class="menu">
-                        <option>No Stars</option>
-                    </select>
+
+                <div class="row-container">
+                    <button id="catalogItemButton" class="menu">Show Details</button>
+                </div>
+                <div class="row-container">
+                    <button id="imageOverlayButton" class="menu">Hide Overlay</button>
+                </div>
+                <div class="row-container">
+                    <button id="helpButton" class="menu">Help</button>
                 </div>
             </div>
-
-            <div id="zoomContainer" class="row-container">
-                <div>Zoom</div>
-                <select id="zoomSelector" class="menu">
-                    <option value="0.25">25%</option>
-                    <option value="0.5">50%</option>
-                    <option value="0.75">75%</option>
-                    <option value="1">100%</option>
-                    <option value="2">200%</option>
-                    <option value="4">400%</option>
-                </select>
-            </div>
-
-            <div class="row-container">
-                <button id="catalogItemButton" class="menu">Show Details</button>
-            </div>
-            <div class="row-container">
-                <button id="imageOverlayButton" class="menu">Hide Overlay</button>
-            </div>
-            <div class="row-container">
-                <button id="helpButton" class="menu">Help</button>
-            </div>
+            <div id="imageInfoText" class="image-info">No Image</div>
         </div>
 
-        <div class="row">
-            <div id="imageContainer" class="row-container">
-                <canvas id="canvas"></canvas>
-                <svg id="image" viewBox="0 0 800 600" class="image">
-                    <defs>
-                        <path d="M    0   0
-                                 L  100   0
-                                 L  300 300
-                                 L  100 600
-                                 L    0 600
-                                 L  200 300
-                                 Z" id="left-chevron"
-                                 class="no-image-chevron no-image-all" />
-                        <path d="M  200   0
-                                 L  300   0
-                                 L  100 300
-                                 L  300 600
-                                 L  200 600
-                                 L    0 300
-                                 Z" id="right-chevron"
-                                 class="no-image-chevron no-image-all" />
+        <div id="imageContainer" class=" ">
+            <canvas id="canvas" width="800" height="600"></canvas>
+            <svg id="image" viewBox="0 0 800 600" class="image">
+                <defs>
+                    <path d="M    0   0
+                             L  100   0
+                             L  300 300
+                             L  100 600
+                             L    0 600
+                             L  200 300
+                             Z" id="left-chevron"
+                             class="no-image-chevron no-image-all" />
+                    <path d="M  200   0
+                             L  300   0
+                             L  100 300
+                             L  300 600
+                             L  200 600
+                             L    0 300
+                             Z" id="right-chevron"
+                             class="no-image-chevron no-image-all" />
 
-                        <svg id="image-star" viewBox="-2.5 -2.5 5 5">
-                            <path d="M -1.414,-1.414
-                                     L -1.414, 1.414
-                                     L  1.414, 1.414
-                                     L  1.414,-1.414
-                                     Z
-                                     M 0.0, -1.0
-                                     A 1.0 1.0 0 1 1 0  1.0
-                                     A 1.0 1.0 0 1 1 0 -1.0
-                                     Z" />
-                            <rect x="-1.414" y="-1.414" width="2.828" height="2.828" class="overlay" />
-                        </svg>
+                    <svg id="image-star" viewBox="-2.5 -2.5 5 5">
+                        <path d="M -1.414,-1.414
+                                 L -1.414, 1.414
+                                 L  1.414, 1.414
+                                 L  1.414,-1.414
+                                 Z
+                                 M 0.0, -1.0
+                                 A 1.0 1.0 0 1 1 0  1.0
+                                 A 1.0 1.0 0 1 1 0 -1.0
+                                 Z" />
+                        <rect x="-1.414" y="-1.414" width="2.828" height="2.828" class="overlay" />
+                    </svg>
 
-                        <svg id="catalog-star" viewBox="-2.5 -2.5 5 5">
-                            <path d="M  0.0  , -1.85
-                                     L -1.76 , -0.572
-                                     L -1.087,  1.5
-                                     L  1.087,  1.5
-                                     L  1.76 , -0.572
-                                     Z
-                                     M 0.0, -1.0
-                                     A 1.0 1.0 0 1 1 0  1.0
-                                     A 1.0 1.0 0 1 1 0 -1.0
-                                     Z" />
-                            <path d="M  0.0  , -1.85
-                                     L -1.76 , -0.572
-                                     L -1.087,  1.5
-                                     L  1.087,  1.5
-                                     L  1.76 , -0.572
-                                     Z" class="overlay"/>
-                        </svg>
+                    <svg id="catalog-star" viewBox="-2.5 -2.5 5 5">
+                        <path d="M  0.0  , -1.85
+                                 L -1.76 , -0.572
+                                 L -1.087,  1.5
+                                 L  1.087,  1.5
+                                 L  1.76 , -0.572
+                                 Z
+                                 M 0.0, -1.0
+                                 A 1.0 1.0 0 1 1 0  1.0
+                                 A 1.0 1.0 0 1 1 0 -1.0
+                                 Z" />
+                        <path d="M  0.0  , -1.85
+                                 L -1.76 , -0.572
+                                 L -1.087,  1.5
+                                 L  1.087,  1.5
+                                 L  1.76 , -0.572
+                                 Z" class="overlay"/>
+                    </svg>
 
-                        <svg id="variable-star" viewBox="-2.5 -2.5 5 5">
-                            <path d="M  0.0  , -1.75
-                                     L -1.512, -0.875
-                                     L -1.512,  0.875
-                                     L  0.0  ,  1.75
-                                     L  1.512,  0.875
-                                     L  1.512, -0.875
-                                     Z
-                                     M 0.0, -1.0
-                                     A 1.0 1.0 0 1 1 0  1.0
-                                     A 1.0 1.0 0 1 1 0 -1.0
-                                     Z" />
-                            <path d="M  0.0  , -1.75
-                                     L -1.512, -0.875
-                                     L -1.512,  0.875
-                                     L  0.0  ,  1.75
-                                     L  1.512,  0.875
-                                     L  1.512, -0.875
-                                     Z" class="overlay" />
-                        </svg>
+                    <svg id="variable-star" viewBox="-2.5 -2.5 5 5">
+                        <path d="M  0.0  , -1.75
+                                 L -1.512, -0.875
+                                 L -1.512,  0.875
+                                 L  0.0  ,  1.75
+                                 L  1.512,  0.875
+                                 L  1.512, -0.875
+                                 Z
+                                 M 0.0, -1.0
+                                 A 1.0 1.0 0 1 1 0  1.0
+                                 A 1.0 1.0 0 1 1 0 -1.0
+                                 Z" />
+                        <path d="M  0.0  , -1.75
+                                 L -1.512, -0.875
+                                 L -1.512,  0.875
+                                 L  0.0  ,  1.75
+                                 L  1.512,  0.875
+                                 L  1.512, -0.875
+                                 Z" class="overlay" />
+                    </svg>
 
-                        <svg id="ring" viewBox="-2.5 -2.5 5 5">
-                            <path d="M 0, -2.5
-                                     A 2.5 2.5 0 1 0 0  2.5
-                                     A 2.5 2.5 0 1 0 0 -2.5
-                                     Z
-                                     M 0 ,-2.1
-                                     A 2.1 2.1 0 1 1 0  2.1
-                                     A 2.1 2.1 0 1 1 0 -2.1
-                                     Z" />
-                    </defs>
+                    <svg id="ring" viewBox="-2.5 -2.5 5 5">
+                        <path d="M 0, -2.5
+                                 A 2.5 2.5 0 1 0 0  2.5
+                                 A 2.5 2.5 0 1 0 0 -2.5
+                                 Z
+                                 M 0 ,-2.1
+                                 A 2.1 2.1 0 1 1 0  2.1
+                                 A 2.1 2.1 0 1 1 0 -2.1
+                                 Z" />
+                    </svg>
+                </defs>
 
-                    <rect x="0" y="0" width="800" height="600" class="no-image no-image-background no-image-all" />
-                    <use href="#left-chevron" x=" 100" y="0" class="no-image" />
-                    <use href="#left-chevron" x="-100" y="0" class="no-image" />
+                <rect x="0" y="0" width="800" height="600" class="no-image no-image-background no-image-all" />
+                <use href="#left-chevron" x=" 100" y="0" class="no-image" />
+                <use href="#left-chevron" x="-100" y="0" class="no-image" />
 
-                    <use href="#right-chevron" x="400" y="0" class="no-image" />
-                    <use href="#right-chevron" x="600" y="0" class="no-image" />
+                <use href="#right-chevron" x="400" y="0" class="no-image" />
+                <use href="#right-chevron" x="600" y="0" class="no-image" />
 
-                    <path d="M 300   0
-                             L 400 150
-                             L 500   0
-                             Z" class="no-image no-image-chevron no-image-all" />
+                <path d="M 300   0
+                         L 400 150
+                         L 500   0
+                         Z" class="no-image no-image-chevron no-image-all" />
 
-                    <path d="M 300 600
-                             L 400 450
-                             L 500 600
-                             Z" class="no-image no-image-chevron no-image-all" />
+                <path d="M 300 600
+                         L 400 450
+                         L 500 600
+                         Z" class="no-image no-image-chevron no-image-all" />
 
-                     <rect x="200" y="200" width="400" height="200" class="no-image no-image-text-container no-image-all" />
-                     <text x="280" y="315" width="400" height="200" class="no-image no-image-text">No Image</text>
-                </svg>
-            </div>
+                 <rect x="200" y="200" width="400" height="200" class="no-image no-image-text-container no-image-all" />
+                 <text x="280" y="315" width="400" height="200" class="no-image no-image-text">No Image</text>
+            </svg>
         </div>
     </body>
 
@@ -261,6 +264,7 @@
             let catalogItemButton = new CatalogItemButton("catalogItemButton", "catalogItemBackground", "catalogItemContainer2", siteController);
             let zoomSelector = new ZoomSelector("zoomSelector", siteController);
             let imageOverlayButton = new ImageOverlayButton("imageOverlayButton", siteController);
+            let imageInfoText = new ImageInfoText("imageInfoText", siteController);
             let imageOverlay = new ImageOverlay("image", "imageContainer", siteController);
             let fitsImage = new FitsImage("canvas", siteController);
 
@@ -270,10 +274,12 @@
             siteController.addSearchListener(catalogItemTable);
             siteController.addSearchListener(catalogItemButton);
             siteController.addSearchListener(imageOverlayButton);
+            siteController.addSearchListener(imageInfoText);
             siteController.addSearchListener(imageOverlay);
 
             siteController.addDataListener(fitsHeaderTable);
             siteController.addDataListener(fitsHeaderButton);
+            siteController.addDataListener(imageInfoText);
             siteController.addDataListener(zoomSelector);
             siteController.addDataListener(fitsImage);
 
@@ -283,6 +289,23 @@
 
             siteController.setOverlayEnabled(false);
             siteController.noImage();
+
+            var navbar = document.getElementById("controlsContainer");
+            var xScroll = navbar.offsetLeft;
+            var yScroll = navbar.offsetTop;
+            console.log("Y: " + yScroll);
+            window.onscroll = () => {
+                if (window.pageYOffset >= yScroll) {
+                    navbar.classList.remove("sticky-x");
+                    navbar.classList.add("sticky-y")
+                } else if (window.pageXOffset >= xScroll) {
+                    navbar.classList.add("sticky-x")
+                    navbar.classList.remove("sticky-y");
+                } else {
+                    navbar.classList.remove("sticky-x");
+                    navbar.classList.remove("sticky-y");
+                }
+            }
         });
     </script>
 </html>

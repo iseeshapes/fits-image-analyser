@@ -122,6 +122,7 @@ class ImageOverlay {
             shape.remove ();
         }
         this._stars = [];
+        $('.no-image').addClass("no-image-hide");
     }
 
     noImage () {
@@ -131,7 +132,6 @@ class ImageOverlay {
     }
 
   	dataLoaded (image) {
-        $('.no-image').addClass("no-image-hide");
         this.clear();
 
         let width = image.width;
@@ -221,11 +221,13 @@ class ImageOverlay {
             nextStar.addClass("selected");
             this.createLabel(this._lastSelected);
 
-            $("#" + this._containerId).animate({
-                scrollTop : nextStar.offset().top,
-                scrollLeft :nextStar.offset().left
-            });
-            ;
+            if (caller !== this) {
+                window.scroll({
+                    top: nextStar.offset().top - $(window).height() / 2,
+                    left: nextStar.offset().left - $(window).width() / 2,
+                    behavior: 'smooth'
+                });
+            }
         }
   	}
 
