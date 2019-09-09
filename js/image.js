@@ -78,6 +78,7 @@ class Image {
         this.heightAngle = Math.sqrt(Math.pow(bottom.ra - top.ra, 2) + Math.pow(bottom.dec - top.dec, 2));
         this.fieldOfView = Math.sqrt(Math.pow(this.topLeft.ra - this.bottomRight.ra, 2)
                                 + Math.pow(this.topLeft.dec - this.bottomRight.dec, 2));
+        this.pixelField  = this.fieldOfView / Math.sqrt(Math.pow(this.width, 2) + Math.pow(this.height, 2));
         this.center      = {
             ra : left.ra + (right.ra - left.ra) / 2,
             dec: top.ra + (bottom.ra - top.ra) / 2
@@ -122,6 +123,20 @@ class Image {
         }
 
         let starFinder = new StarFinder (this);
+        if (searchResults.query.type === "radius") {
+            let radiusSquared = Math.pow(searchResults.query.r / this.pixelField, 2);
+            //let radiusSquared = Math.pow(Angle.toDegrees(searchResults.query.radius), 2);
+            //let ra = Angle.toDegrees(searchResults.query.ra);
+            //let dec = Angle.toDegrees(searchResults.query.dec);
+            starFinder.stars = starFinder.stars.filter((star, index, array) => {
+                //let raDec = this.wcs.pix2sky(star.x, star.y);
+                //let raSquared = Math.pow(raDec[0] - ra, 2);
+                //let decSquared = Math.pow(raDec[1] - dec, 2);
+                //return raSquared + decSquared < radiusSquared;
+                let distanceSquared = Math.pow(star.x - this.width / 2, 2) + Math.pow(star.y - this.height / 2, 2);
+                return distanceSquared < radiusSquared;
+            });
+        }
         let distance;
         let closestDistance;
         let closestStar;
