@@ -7,34 +7,35 @@
         <script src="js/lib/jquery.min.js"></script>
     </head>
     <body>
+        <h1>Astromery.net Command Generator</h1>
+        <div class="introduction">
+            Fill in the desired parameters and click "Generate Command".  Cut and paste the command in to the console.
+        </div>
         <table>
             <tr>
-                <td><label for="overWright">Over Write</label></td>
+                <td><label for="overWright">Overwrite</label></td>
                 <td><input type="checkbox" id="overWright" value="true" /></td>
+                <td>Overwrites any existing solution files</td>
             </tr>
             <tr>
                 <td><label for="noPlot">No Plot</label></td>
                 <td><input type="checkbox" id="noPlot" value="true" /></td>
+                <td>If selected creates solution files not images</td>
             </tr>
             <tr>
                 <td><label for="ra">Right Ascension</label></td>
                 <td><input type="text" id="ra" value="" /></td>
+                <td>RA center of the search in "9.9" (degress), "99h99m99.9s", or "99 99 99.9" format</td>
             </tr>
             <tr>
                 <td><label for="dec">Declination</label></td>
                 <td><input type="text" id="dec" value="" /></td>
+                <td>Dec center of the search in "+9.9" (degress), "+99d99m99.9s", or "+99 99 99.9" format</td>
             </tr>
             <tr>
                 <td><label for="radius">Radius</label></td>
                 <td><input type="text" id="radius" value="" /></td>
-            </tr>
-            <tr>
-                <td><label for="scaleLow">Scale Low</label></td>
-                <td><input type="text" id="scaleLow" value="" /></td>
-            </tr>
-            <tr>
-                <td><label for="scaleHigh">Scale High</label></td>
-                <td><input type="text" id="scaleHigh" value="" /></td>
+                <td>Search radius in degrees</td>
             </tr>
             <tr>
                 <td>Scale Units</td>
@@ -46,26 +47,42 @@
                         <option value="arcminwidth">Arcminute Width</option>
                     </select>
                 </td>
+                <td>Units for image scale</td>
+            </tr>
+            <tr>
+                <td><label for="scaleLow">Scale Low</label></td>
+                <td><input type="text" id="scaleLow" value="" /></td>
+                <td>Guess at lowest image scale</td>
+            </tr>
+            <tr>
+                <td><label for="scaleHigh">Scale High</label></td>
+                <td><input type="text" id="scaleHigh" value="" /></td>
+                <td>Guess at highest image scale</td>
             </tr>
             <tr>
                 <td><label for="downsample">Downsample</label></td>
                 <td><input type="text" id="downsample" value="" /></td>
+                <td>Multiple to reduce image by (good for large images)</td>
             </tr>
             <tr>
                 <td><label for="dir">Directory</label></td>
                 <td><input type="text" id="dir" value="" /></td>
+                <td>Solution file directory relative to current</td>
             </tr>
             <tr>
                 <td><label for="depth">Depth</label></td>
                 <td><input type="text" id="depth" value="" /></td>
+                <td>Limits the stars used in the solution (speeds up query)</td>
             </tr>
             <tr>
                 <td><label for="resort">Resort</label></td>
                 <td><input type="checkbox" id="resort" value="false" /></td>
+                <td>Can't remember</td>
             </tr>
             <tr>
                 <td><label for="noVerify">No Verify</label></td>
                 <td><input type="checkbox" id="noVerify" value="false" /></td>
+                <td>Can't remember</td>
             </tr>
             <tr>
                 <td>Parity</td>
@@ -76,18 +93,22 @@
                         <option value="neg">Negative</option>
                     </select>
                 </td>
+                <td>Can't remember</td>
             </tr>
             <tr>
                 <td><label for="verbose">Verbose</label></td>
                 <td><input type="checkbox" id="verbose" value="false" /></td>
+                <td>More console output (good for debuging commands)</td>
             </tr>
             <tr>
                 <td><label for="filename">Filename</label></td>
                 <td><input type="text" id="filename" value="" /></td>
+                <td>File to be plate solved</td>
             </tr>
         </table>
-        <button type="button" id="loadButton">Load</button>
-        <textarea id="command" rows="8" cols="80"></textarea>
+        <button type="button" id="loadButton">Generate Command</button>
+        <br>
+        <textarea id="command" rows="8" cols="120"></textarea>
         <script type="text/javascript">
             function checkboxValue (id) {
                 if ($("#" + id).prop('checked')) {
