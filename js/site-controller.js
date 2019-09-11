@@ -67,7 +67,7 @@ class SiteController {
                  	'Accept': 'application/json',
                 	'Content-Type': 'application/json'
               		},
-              	url : "/sip/points",
+              	url : "/data/points",
               	data : JSON.stringify([
                         [this.image.topLeft.ra    , this.image.topLeft.dec    ],
                         [this.image.topRight.ra   , this.image.topRight.dec   ],
