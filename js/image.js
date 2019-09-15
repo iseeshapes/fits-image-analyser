@@ -81,7 +81,7 @@ class Image {
         this.pixelField  = this.fieldOfView / Math.sqrt(Math.pow(this.width, 2) + Math.pow(this.height, 2));
         this.center      = {
             ra : left.ra + (right.ra - left.ra) / 2,
-            dec: top.ra + (bottom.ra - top.ra) / 2
+            dec: top.dec + (bottom.dec - top.dec) / 2
         };
 
         console.log("Center => RA: " + Angle.printHours(this.center.ra)

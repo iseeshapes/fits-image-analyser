@@ -15,6 +15,7 @@
         <script src="js/control/catalog-item-selector.js"></script>
         <script src="js/control/file-load-button.js"></script>
         <script src="js/control/fits-header-button.js"></script>
+        <script src="js/control/help-button.js"></script>
         <script src="js/control/image-info-text.js"></script>
         <script src="js/control/image-overlay-button.js"></script>
         <script src="js/control/zoom-selector.js"></script>
@@ -251,12 +252,21 @@
         </div>
     </div>
 
+    <div id="helpBackground" class="popup-background" style="display: none">
+        <div id="helpContainer1" class="popup-container1">
+            <div id="helpContainer2" class="popup-container2">
+                <!--# include file="help.html" -->
+            </div>
+        </div>
+    </div>
+
     <script>
         $(function() {
             let siteController = new SiteController();
             let fileLoadButton = new FileLoadButton("fileLoadButton", "fileInput", siteController);
             let fitsHeaderTable = new FitsHeaderTable("fitsHeaderTable", siteController);
             let fitsHeaderButton = new FitsHeaderButton("fitsHeaderButton", "fitsHeaderBackground", "fitsHeaderContainer2", siteController);
+            let helpButton = new HelpButton("helpButton", "helpBackground", "helpContainer2", siteController);
             let catalogItemSelector = new CatalogItemSelector("catalogSelect", "catalogItemSelect", siteController);
             let catalogItemsTable = new CatalogItemsTable("catalogItemsTable", siteController);
             let catalogItemsButton = new CatalogItemsButton("catalogItemsButton", "catalogItemsBackground", "catalogItemsContainer2", siteController);

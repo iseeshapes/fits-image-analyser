@@ -1,0 +1,36 @@
+<div class="help">
+    <h1 class="help">Help</h1>
+    Fits Image Analyser (FIA) is a tool for identifying items in FITS format images.  It was originally intended as an online resource for ensuring that a target was in the frame, and selecting suitable check stars for photometry.  However FIA can be used for many other applications.
+    <h2 class="help">How does it work</h2>
+    Using the &quot;Select FITS Image&quot; button the user can select a FITS image file from the file system.  If the file contains WCS (world coordinate system) header information then FIA will calculate Right Ascension, Declination, Rotation, and Field of View of the image.  It will then try to identify the 1000 brightest items in the center of the image (currently this is only stars).
+    <p>
+    FIA will draw an overlay on top of the image showing the position of each of these catalog items.  The FIA also contains a star finding algorithm.  This will add all unidentified items to the overlay.
+    <h2 class="help">FITS File Format</h2>
+    To ensure the file selected is a FITS image FIA looks for the NAXIS FITS Header and checks it value is 2.  The file will not load unless this is the case.
+    <p>
+    For the Catalog Item search to work the WCS information must be present in the FITS Header.  FIA uses a third party library (WCSTools ported to Javascript - reference needed here) to calculate the image position in the sky.  Typically this requires the following FITS Header values - CTYPE1, CRPIX1, CRVAL1, CTYPE2, CRPIX2, CRVAL2, CD1_1, CD1_2, CD2_1, and CD2_2.
+    <p>
+    If there is no WCS information in the FITS Header the easiest way to add it is by &quot;plate solving&quot; the image in a third party tool.  Astrometry.net, PinPoint (used in Maxim DL), and Astrometrica are all have plate-solving tool, which have been tested with FIA and are a good place to start.
+    <h2 class="help">Image</h2>
+    <h3 class="help">No Image</h3>
+    When an image hasn't been selected then the &quot;No Image&quot; overlay is shown.  Only the &quot;Select FITS Image&quot; and &quot;Help&quot; buttons are enabled.
+    <h3 class="help">Image Rendering</h3>
+    FIA will make a best guess at scaling the image so that all the items are seen.  At the present time there is no method of setting the custom levels.
+    <h3 class="help">Image Overlay</h3>
+    Items identified in the image are overlaid with shapes.  Squares show non-catalog items and pentagons show items in the catalog (note only the first 1000 brightest catalog items are shown). In crowded star fields cropping and re-plate solving the image is recommended if the overlay does not contain all the required items.
+    <h2 class="help">Menu</h2>
+    <h3 class="help">Select FITS Image Button</h3>
+    Allows the user to load a FITS image into FIA.
+    <h3 class="help">FITS Header Button</h3>
+    Shows a popup containing all the fits header information excluding comments.
+    <h3 class="help">Catalog Items Button</h3>
+    Shows a table of all the catalog items in the image.  These are sorted by magnitude.  Clicking on an item will close the table and take you to the item in the image.
+    <h3 class="help">Item Selector</h3>
+    Provides a method to select catalog items.  To select an item first choose the catalog and then the catalog ID can be selected.  Upon selecting an item it will be brought to the centre of view.
+    <h3 class="help">Zoom</h3>
+    Scales the image by the 25%, 50%, 75%, 100%, 200% or 400%.  The image overlay id scaled by the same amount.
+    <h3 class="help">Show Details</h3>
+    Displays a popup containing all the catalog and image information.
+    <h3 class="help">Hide/Show Overlay</h3>
+    Disables the image overlay.
+</div>
