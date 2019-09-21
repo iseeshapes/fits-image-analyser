@@ -1,11 +1,6 @@
 'use strict'
 
 class CatalogItem {
-    static coreAttributes = [];
-    static imageAttributes = [];
-    static idAttributes = [];
-    static dataAttributes = [];
-
     static setAttributes (searchResults) {
         CatalogItem.coreAttributes = [
             { type: "x-pixel" , title : "X (WCS)"         , id: "-12"},
@@ -193,3 +188,8 @@ class CatalogItem {
         return false;
     }
 }
+
+CatalogItem.coreAttributes = [];
+CatalogItem.imageAttributes = [];
+CatalogItem.idAttributes = [];
+CatalogItem.dataAttributes = [];

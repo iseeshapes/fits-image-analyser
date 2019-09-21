@@ -49,7 +49,6 @@ class FitsImage {
         let ctx = canvas.getContext('2d');
         this._imageData = ctx.getImageData(0, 0, this._width, this._height);
         let data = this._imageData.data;
-        console.log("Got data");
 
         let index;
         let x;
@@ -77,12 +76,7 @@ class FitsImage {
 
             index += 4;
         }
-
-        console.log("Calculated pixel values");
-
         ctx.putImageData(this._imageData, 0, 0);
-
-        console.log("Put image data");
     }
 
     zoom (caller, zoom) {

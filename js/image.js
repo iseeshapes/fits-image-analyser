@@ -109,6 +109,8 @@ class Image {
     createItems (searchResults) {
         CatalogItem.setAttributes(searchResults);
 
+        console.log("Items returned " + searchResults.items.length);
+
         let nextId = 0;
         this.items = [];
         for (let item of searchResults.items) {
@@ -177,5 +179,6 @@ class Image {
                 this.items.push(item);
             }
         }
+        console.log("Stars in image not matched: " + starFinder.stars.length);
     }
 }
