@@ -1,6 +1,59 @@
 "use strict";
 
 class Angle {
+    static parseRA (rawRA) {
+        let value = rawRA.trim();
+        if (value === "") {
+            return undefined;
+        }
+        let group = null;
+        group = /(\d+)h\s?(\d+)m\s?(\d+(\.\d+)?)s/.exec(value); //ra wiki pattern
+        if (group == null) {
+            group = /(\d+) (\d+) (\d+(\.\d+)?)/.exec(value); //ra wiki pattern
+        }
+        if (group != null) {
+            let hours = Number(group[1]);
+            let minutes = Number(group[2]);
+            let seconds = Number(group[3]);
+            return (hours + minutes / 60 + seconds / 3600) * 15;
+        }
+        if (group == null) {
+            group = /^[+-]?\d+(\.\d+)?$/.exec(value); // degrees pattern
+        }
+        if (group != null) {
+            return Number(group[0]);
+        }
+        return undefined;
+    }
+
+    static parseDec (rawDec) {
+        let value = rawDec.trim();
+        if (value === "") {
+            return undefined;
+        }
+        let group = null;
+        group = /([+-]?\d+)d\s?(\d+)m\s?(\d+(\.\d+)?)s/.exec(value); //dec letter pattern
+        if (group == null) {
+            group = /([+-]?\d+)˚\s?(\d+)'\s?(\d+(\.\d+)?)"/.exec(value); //dec wiki pattern
+        }
+        if (group == null) {
+            group = /(\d+) (\d+) (\d+(\.\d+)?)/.exec(value); //dec space pattern
+        }
+        if (group != null) {
+            let degrees = Number(group[1]);
+            let minutes = Number(group[2]);
+            let seconds = Number(group[3]);
+            return degrees + minutes / 60 + seconds / 3600;
+        }
+        if (group == null) {
+            group = /^[+-]?\d+(\.\d+)?$/.exec(value); // degrees pattern
+        }
+        if (group != null) {
+            return Number(group[0]);
+        }
+        return undefined;
+    }
+
   static toRadians(degrees) {
     return degrees * Math.PI / 180.0;
   }

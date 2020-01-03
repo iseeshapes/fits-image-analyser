@@ -4,13 +4,18 @@
         <meta charset="utf-8">
         <title>Astrometry.net Options</title>
         <!--script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script-->
+        <script src="js/astrometry/astrometry-form.js"></script>
         <script src="js/lib/jquery.min.js"></script>
+        <script src="js/util/angle.js"></script>
+        <script src="js/util/fits-header.js"></script>
     </head>
     <body>
         <h1>Astromery.net Command Generator</h1>
         <div class="introduction">
             Fill in the desired parameters and click "Generate Command".  Cut and paste the command in to the console.
         </div>
+        <label for="fitsFileInput">Use values from Fits File</label>
+        <input type="file" name="fitsFileInput" id="fitsFileInput">
         <table>
             <tr>
                 <td><label for="overWright">Overwrite</label></td>
@@ -110,114 +115,10 @@
         <br>
         <textarea id="command" rows="8" cols="120"></textarea>
         <script type="text/javascript">
-            function checkboxValue (id) {
-                if ($("#" + id).prop('checked')) {
-                    return true;
-                }
-                return undefined;
-            }
-
-            function convertRightAscension (id) {
-                let item = $("#" + id)
-                let value = item.val().trim();
-                if (value === "") {
-                    return undefined;
-                }
-                let group = null;
-                group = /(\d+)h\s?(\d+)m\s?(\d+(\.\d+)?)s/.exec(value); //ra wiki pattern
-                if (group == null) {
-                    group = /(\d+) (\d+) (\d+(\.\d+)?)/.exec(value); //ra wiki pattern
-                }
-                if (group != null) {
-                    item.css("color", "#000000");
-                    let hours = Number(group[1]);
-                    let minutes = Number(group[2]);
-                    let seconds = Number(group[3]);
-                    return (hours + minutes / 60 + seconds / 3600) * 15;
-                }
-                if (group == null) {
-                    group = /^[+-]?\d+(\.\d+)?$/.exec(value); // degrees pattern
-                }
-                if (group != null) {
-                    item.css("color", "#000000");
-                    return Number(group[0]);
-                }
-                //private static Pattern degreesPattern = Pattern.compile("\\d+(\\.\\d+)?");
-                //private static Pattern decWikiPattern = Pattern.compile("([+-]?\\d+)° (\\d+)′ (\\d+(.\\d+)?)″");
-                //private static Pattern decSexagesimalPattern = Pattern.compile("([+-]?\\d+)d (\\d+)m (\\d+(\\.\\d+)?)s");
-                item.css("color", "#ff0000");
-                return undefined;
-            }
-
-            function convertDeclination (id) {
-                let item = $("#" + id)
-                let value = item.val().trim();
-                if (value === "") {
-                    return undefined;
-                }
-                let group = null;
-                group = /([+-]?\d+)d\s?(\d+)m\s?(\d+(\.\d+)?)s/.exec(value); //dec letter pattern
-                if (group == null) {
-                    group = /([+-]?\d+)˚\s?(\d+)'\s?(\d+(\.\d+)?)"/.exec(value); //dec wiki pattern
-                }
-                if (group == null) {
-                    group = /(\d+) (\d+) (\d+(\.\d+)?)/.exec(value); //dec space pattern
-                }
-                if (group != null) {
-                    item.css("color", "#000000");
-                    let degrees = Number(group[1]);
-                    let minutes = Number(group[2]);
-                    let seconds = Number(group[3]);
-                    return degrees + minutes / 60 + seconds / 3600;
-                }
-                if (group == null) {
-                    group = /^[+-]?\d+(\.\d+)?$/.exec(value); // degrees pattern
-                }
-                if (group != null) {
-                    item.css("color", "#000000");
-                    return Number(group[0]);
-                }
-                //private static Pattern degreesPattern = Pattern.compile("\\d+(\\.\\d+)?");
-                //private static Pattern decWikiPattern = Pattern.compile("([+-]?\\d+)° (\\d+)′ (\\d+(.\\d+)?)″");
-                //private static Pattern decSexagesimalPattern = Pattern.compile("([+-]?\\d+)d (\\d+)m (\\d+(\\.\\d+)?)s");
-                item.css("color", "#ff0000");
-                return undefined;
-            }
-
-            $('#loadButton').click(() => {
-                let argument = {
-                    '--overwrite' : checkboxValue ("overWright"),
-                    '--no-plot' : checkboxValue ("noPlot"),
-                    '--ra' : convertRightAscension ("ra"),
-                    '--dec' : convertDeclination("dec"),
-                    '--radius' : $("#radius").val(),
-                    '--scale-low' : $("#scaleLow").val(),
-                    '--scale-high' : $("#scaleHigh").val(),
-                    '--scale-units' : $("#scaleUnits").val(),
-                    '--downsample' : $("#downsample").val(),
-                    '--dir' : $("#dir").val(),
-                    '--depth' : $("#depth").val(),
-                    '--resort' : checkboxValue ("resort"),
-                    '--no-verify' : checkboxValue ("noVerify"),
-                    '--parity' : $("#parity").val(),
-                    '--verbose' : checkboxValue ("verbose")
-                }
-                let filename = $("#filename").val();
-
-                let command = "solve-field"
-                for (let [key, value] of Object.entries(argument)) {
-                    if (value === true) {
-                        command += " " + key;
-                    } else if (value !== undefined && value !== "" && value != "no value") {
-                        command += " " + key + " " + value;
-                    }
-                }
-                if (filename !== undefined) {
-                    command += " " + filename;
-                }
-
-                $("#command").val(command);
-            });
+        new AstrometryForm ("overWright", "noPlot", "ra", "dec", "radius",
+            "scaleLow", "scaleHigh", "scaleUnits", "downsample", "dir", "depth",
+            "resort", "noVerify", "parity", "verbose", "filename", "command",
+            "loadButton", "fitsFileInput");
         </script>
     </body>
 </html>
