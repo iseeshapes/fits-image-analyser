@@ -84,7 +84,7 @@ class AstrometryForm {
 
     convertDeclination (id) {
         let item = $("#" + id);
-        let declination = Angle.parseRA (item.val());
+        let declination = Angle.parseDec (item.val());
         if (declination === undefined) {
             item.css("color", "#ff0000");
         } else {
